@@ -29,9 +29,22 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import { Calendar } from "@/components/ui/calendar";
-import { ArrowUpIcon, AtSignIcon, BabyIcon, BedDoubleIcon, Book, Calendar as CalendarIcon, CheckIcon, ChevronsUpDownIcon, CircleUserRoundIcon, Loader, Loader2, PhoneIcon } from "lucide-react";
+import {
+  ArrowUpIcon,
+  AtSignIcon,
+  BabyIcon,
+  BedDoubleIcon,
+  Book,
+  Calendar as CalendarIcon,
+  CheckIcon,
+  ChevronsUpDownIcon,
+  CircleUserRoundIcon,
+  Loader,
+  Loader2,
+  PhoneIcon,
+} from "lucide-react";
 import { format, formatDate } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useBookingStore } from "@/store/useBookingStore";
@@ -54,8 +67,22 @@ import {
   getRoomTypeRates,
 } from "../ServerAction/rooms.action";
 import parse from "html-react-parser";
-import { capitalizeFirstLetter, commafy, convertToLocalUTCTime, dateAnalysis, emailStringConfirmBooking, formatCurrencyJP, generateReferenceNumber, getPercentage } from "@/utils/Helpers";
-import { addOnlineReservation, checkReferenceNumber, checkReservation, peekLastReservation } from "../ServerAction/reservations.action";
+import {
+  capitalizeFirstLetter,
+  commafy,
+  convertToLocalUTCTime,
+  dateAnalysis,
+  emailStringConfirmBooking,
+  formatCurrencyJP,
+  generateReferenceNumber,
+  getPercentage,
+} from "@/utils/Helpers";
+import {
+  addOnlineReservation,
+  checkReferenceNumber,
+  checkReservation,
+  peekLastReservation,
+} from "../ServerAction/reservations.action";
 import { useRouter } from "next/navigation";
 import { getPromo } from "../ServerAction/promos.action";
 import { RoomCard } from "@/app/booking/room-card";
@@ -66,14 +93,24 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { BookingSuccess } from "./BookingSuccess";
 import { countries } from "@/data/countries";
 import { useConfig } from "@/utils/ConfigProvider";
-import { SiAmericanexpress, SiMastercard, SiVisa } from "@icons-pack/react-simple-icons";
+import {
+  SiAmericanexpress,
+  SiMastercard,
+  SiVisa,
+} from "@icons-pack/react-simple-icons";
 import sendEmail from "../ServerAction/email.action";
 import { checkDiscount } from "../ServerAction/discounts.action";
 
 export default function MainBookingForm() {
-  const config = useConfig()
+  const config = useConfig();
   const formRef = useRef<HTMLFormElement>(null);
-  const { pageState, goPrevPage, goNextPage, setToSPrivacyModalState, setPageState} = useBookingStore();
+  const {
+    pageState,
+    goPrevPage,
+    goNextPage,
+    setToSPrivacyModalState,
+    setPageState,
+  } = useBookingStore();
 
   const BookingForms = [
     <BookingDateForm formRef={formRef} />,
@@ -113,7 +150,6 @@ export default function MainBookingForm() {
           Next
         </Button> */}
       </div>
-     
     </div>
   );
 }
@@ -123,7 +159,7 @@ function BookingDateForm({
 }: {
   formRef: React.RefObject<HTMLFormElement>;
 }) {
-  const config = useConfig()
+  const config = useConfig();
   const {
     pageState,
     goNextPage,
@@ -134,7 +170,7 @@ function BookingDateForm({
     goToRoomRates,
     referenceNumber,
     setReferenceNumber,
-    checkInRange
+    checkInRange,
   } = useBookingStore();
 
   const formSchema = z.object({
@@ -148,7 +184,7 @@ function BookingDateForm({
           required_error: "Please select a date range",
         },
       )
-      .default({from: checkInRange.from, to: checkInRange.to})
+      .default({ from: checkInRange.from, to: checkInRange.to })
       .refine((data) => data.from < data.to, {
         path: ["dateRange"],
         message: "From date must be before to date",
@@ -182,10 +218,10 @@ function BookingDateForm({
   const [pageStateLoading, setPageStateLoading] = useState(false);
   const [pageStateTrigger, setPageStateTrigger] = useState(false);
   const [clickCount, setClickCount] = useState(0);
-  
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("clickCount", clickCount)
-    if(clickCount > 1) return;
+    console.log("clickCount", clickCount);
+    if (clickCount > 1) return;
 
     setPageStateLoading(true);
     setClickCount(clickCount + 1);
@@ -198,21 +234,18 @@ function BookingDateForm({
         setPageStateLoading(false);
         return;
       }
-      console.log("with promo code")
-      console.log(res)
+      console.log("with promo code");
+      console.log(res);
       setPromoCode(values.promoCode);
       setPromoDetails(res);
-      setClickCount(0)
+      setClickCount(0);
       goToRoomRates();
-    } 
-    
-    else {
-      console.log("no promo code")
+    } else {
+      console.log("no promo code");
       setPageStateLoading(false);
-      setClickCount(0)
+      setClickCount(0);
       goNextPage();
     }
-
   }
 
   useEffect(() => {
@@ -222,11 +255,11 @@ function BookingDateForm({
   return (
     <div className="mx-auto rounded-sm p-3">
       <Card className="p-4">
-      <div
+        <div
           className={cn(
-            "my-2 flex w-full flex-col items-center justify-between gap-2 rounded-sm bg-cstm-secondary p-2 text-xs text-cstm"
+            "my-2 flex w-full flex-col items-center justify-between gap-2 rounded-sm bg-cstm-secondary p-2 text-xs text-cstm",
           )}
-          >
+        >
           <div className="flex flex-wrap justify-center gap-4 md:justify-normal">
             <div className="flex gap-1">
               <p className="font-semibold">Check-In Time:</p>
@@ -268,7 +301,7 @@ function BookingDateForm({
             <FormField
               name="dateRange"
               render={({ field }) => (
-                <FormItem className="flex w-full mt-4 flex-col md:w-1/2 justify-end">
+                <FormItem className="mt-4 flex w-full flex-col justify-end md:w-1/2">
                   <FormLabel className=" ">Date</FormLabel>
                   <FormControl className=" ">
                     <Popover>
@@ -277,7 +310,7 @@ function BookingDateForm({
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-full pl-3 text-left font-normal  ",
+                              "w-full pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground",
                             )}
                           >
@@ -312,7 +345,7 @@ function BookingDateForm({
                       </PopoverContent>
                     </Popover>
                   </FormControl>
-                  <div className="h-4 ">
+                  <div className="h-4">
                     <FormMessage />
                   </div>
                 </FormItem>
@@ -327,35 +360,35 @@ function BookingDateForm({
                   <FormControl className=" ">
                     <Input placeholder="ABCD5678" {...field} />
                   </FormControl>
-                  <div className="h-4 ">
+                  <div className="h-4">
                     <FormMessage />
                   </div>
                 </FormItem>
               )}
             />
-            
           </form>
         </Form>
 
-        <div className="p-3 flex flex-col bg-cstm-primary rounded-lg justify-center self-end mt-4 text-sm">
-            <p className="text-white font-bold">Questions?</p>
-            <p className="text-white/[.70]">You may reach us through our channels below:</p>
-            {
-              config.CompanyContact &&
-              <div className="flex gap-4 mt-4"> 
-                <PhoneIcon size={16} className="text-white"/>
-                <p className="text-white/[.70]">{config.CompanyContact}</p>
-              </div>
-            }
-            {
-              config.CompanyEmail &&
-              <div className="flex gap-4"> 
-                <AtSignIcon size={16} className="text-white"/>
-                <p className="text-white/[.70] text-wrap">{config.CompanyEmail}</p>
-              </div>
-            }
+        <div className="mt-4 flex flex-col justify-center self-end rounded-lg bg-cstm-primary p-3 text-sm">
+          <p className="font-bold text-white">Questions?</p>
+          <p className="text-white/[.70]">
+            You may reach us through our channels below:
+          </p>
+          {config.CompanyContact && (
+            <div className="mt-4 flex gap-4">
+              <PhoneIcon size={16} className="text-white" />
+              <p className="text-white/[.70]">{config.CompanyContact}</p>
+            </div>
+          )}
+          {config.CompanyEmail && (
+            <div className="flex gap-4">
+              <AtSignIcon size={16} className="text-white" />
+              <p className="text-wrap text-white/[.70]">
+                {config.CompanyEmail}
+              </p>
+            </div>
+          )}
         </div>
-        
       </Card>
       <div className={cn("mt-4 flex justify-center gap-4", "")}>
         <Button
@@ -365,12 +398,12 @@ function BookingDateForm({
           form="bookingForm"
           onClick={() => {
             // used to handle multiple clicks
-            setClickCount(clickCount + 1)
+            setClickCount(clickCount + 1);
           }}
         >
           {pageStateLoading ? (
             <Loader className="h-4 w-4 animate-spin" color="white" />
-          ): (
+          ) : (
             <p>Check Availability</p>
           )}
         </Button>
@@ -384,23 +417,34 @@ function SelectRoomForm({
 }: {
   formRef: React.RefObject<HTMLFormElement>;
 }) {
-  const { pageState, goNextPage, goPrevPage, setSelectedRoom, selectedRoom, checkInRange } =
-    useBookingStore();
+  const {
+    pageState,
+    goNextPage,
+    goPrevPage,
+    setSelectedRoom,
+    selectedRoom,
+    checkInRange,
+  } = useBookingStore();
 
   const { data: roomTypes, isFetching: roomTypesFetching } = useQuery({
     queryKey: ["GetRoomTypes"],
     queryFn: async () => (await getRoomsTypOptions()).res,
   });
 
-  const {data: roomRates, isFetching: roomRatesFetching} = useQuery({
+  const { data: roomRates, isFetching: roomRatesFetching } = useQuery({
     queryKey: ["roomRates"],
     queryFn: async () => (await getRoomTypeRates()).res,
-  })
+  });
 
-  const {data: availableRooms, isLoading: availableRoomsLoading, refetch} = useQuery({
+  const {
+    data: availableRooms,
+    isLoading: availableRoomsLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["availableRooms"],
-    queryFn: async () => (await getAvailableRoomTypeRPC(checkInRange.from, checkInRange.to)).res
-  })
+    queryFn: async () =>
+      (await getAvailableRoomTypeRPC(checkInRange.from, checkInRange.to)).res,
+  });
 
   const formSchema = z.object({
     roomType: z.number().min(1, { message: "Please select a room type" }),
@@ -418,10 +462,9 @@ function SelectRoomForm({
   }
 
   function changeSelectedRoom(type: any, disabled: boolean): void {
-    if(disabled) {
-      return
-    }
-    else {
+    if (disabled) {
+      return;
+    } else {
       setSelectedRoom(type);
     }
   }
@@ -435,7 +478,7 @@ function SelectRoomForm({
   return (
     <div
       className={cn(
-        "mx-auto w-full snap-both snap-mandatory overflow-auto rounded-sm p-2 flex-col gap-4",
+        "mx-auto w-full snap-both snap-mandatory flex-col gap-4 overflow-auto rounded-sm p-2",
         "xl:w-3/4",
         "",
       )}
@@ -506,56 +549,82 @@ function SelectRoomForm({
           })
         )}
       </Accordion> */}
-      {
-        availableRoomsLoading ? (
-          <div className="flex flex-col justify-center items-center">
-            <Loader className="animate-spin" />
-            <p>Loading...</p>
-          </div> 
-        ) : (
-          <div className="flex flex-col items-center">
-            <p className="text-xl font-bold text-cstm-secondary">Available Rooms</p>
-            <div className="flex gap-4">
-                {/* <CalendarIcon size={20} color="black"></CalendarIcon> */}
-                <p className="text-black/[.70] "><span className="text-cstm-primary font-semibold">{formatDate(checkInRange.from, "MMMM dd, yyyy")}</span> to <span className="text-cstm-primary font-semibold">{formatDate(checkInRange.to, "MMMM dd, yyyy")}</span></p>
-            </div>
-            <p className="text-black/[.70]">Select your preferred room type before proceeding.</p>
-            <p className="text-sm text-black/[.60]">Room Availability is subject to change due to various factors, such as new bookings, updates to room inventory, and customer cancellations.</p>
-            <div className="flex gap-8 flex-wrap justify-center">
-            {availableRooms?.map((roomType: any, i: number) => {
-
-                  if(roomType.AvailableRooms > 0) {
-                    let price = undefined
-                    if(!roomRatesFetching && Array.isArray(roomRates)){
-                      if(isString(roomRates)) {
-                        price = undefined
-                      }
-                      else {
-                        price = roomRates?.find((rate: any) => rate.RoomTypeId === roomType.Id)?.BaseRoomRate;
-                      }
-                    }
-                    return (
-                        <RoomCard tabindex={0} key={i} onClick={() => changeSelectedRoom(roomType, false)} roomTitle={roomType.Name} bedType={roomType.BedType} adultCount={roomType.MaxAdult} childCount={roomType.MaxChild} roomDesc={roomType.Description} price={price} selectedType={selectedRoom.Name} disabled={false} availRooms={roomType.AvailableRooms} images={roomType.Images}></RoomCard>
-                    );
-                  }
-                  
-
-                  // Available Rooms Only
-                  // if (roomType.Rooms[0].count <= 0) {
-                  //   return <RoomCard tabindex={0} key={i} onClick={() => changeSelectedRoom(roomType, true)} roomTitle={roomType.Name} bedType={roomType.BedTypes.TypeName} adultCount={roomType.MaxAdult} childCount={roomType.MaxChild} roomDesc={roomType.Description} price={price} selectedType={selectedRoom.Name} disabled={true} images={roomType.Images}></RoomCard>;
-                  // }
-
-                  // No Filter
-                  // return (
-                  //   <RoomCard tabindex={0} key={i} onClick={() => changeSelectedRoom(roomType, false)} roomTitle={roomType.Name} bedType={roomType.BedTypes.TypeName} adultCount={roomType.MaxAdult} childCount={roomType.MaxChild} roomDesc={roomType.Description} price={price} selectedType={selectedRoom.Name} disabled={false} availRooms={roomType.Rooms[0].count} images={roomType.Images} ></RoomCard>
-                  // )
-                })
-            }  
-            </div>
+      {availableRoomsLoading ? (
+        <div className="flex flex-col items-center justify-center">
+          <Loader className="animate-spin" />
+          <p>Loading...</p>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center">
+          <p className="text-xl font-bold text-cstm-secondary">
+            Available Rooms
+          </p>
+          <div className="flex gap-4">
+            {/* <CalendarIcon size={20} color="black"></CalendarIcon> */}
+            <p className="text-black/[.70]">
+              <span className="font-semibold text-cstm-primary">
+                {formatDate(checkInRange.from, "MMMM dd, yyyy")}
+              </span>{" "}
+              to{" "}
+              <span className="font-semibold text-cstm-primary">
+                {formatDate(checkInRange.to, "MMMM dd, yyyy")}
+              </span>
+            </p>
           </div>
-        )
-      }
-      
+          <p className="text-black/[.70]">
+            Select your preferred room type before proceeding.
+          </p>
+          <p className="text-sm text-black/[.60]">
+            Room Availability is subject to change due to various factors, such
+            as new bookings, updates to room inventory, and customer
+            cancellations.
+          </p>
+          <div className="flex flex-wrap justify-center gap-8">
+            {availableRooms?.map((roomType: any, i: number) => {
+              if (roomType.AvailableRooms > 0) {
+                let price = undefined;
+                if (!roomRatesFetching && Array.isArray(roomRates)) {
+                  if (isString(roomRates)) {
+                    price = undefined;
+                  } else {
+                    price = roomRates?.find(
+                      (rate: any) => rate.RoomTypeId === roomType.Id,
+                    )?.BaseRoomRate;
+                  }
+                }
+                return (
+                  <RoomCard
+                    tabindex={0}
+                    key={i}
+                    onClick={() => changeSelectedRoom(roomType, false)}
+                    roomTitle={roomType.Name}
+                    bedType={roomType.BedType}
+                    adultCount={roomType.MaxAdult}
+                    childCount={roomType.MaxChild}
+                    roomDesc={roomType.Description}
+                    price={price}
+                    selectedType={selectedRoom.Name}
+                    disabled={false}
+                    availRooms={roomType.AvailableRooms}
+                    images={roomType.Images}
+                  ></RoomCard>
+                );
+              }
+
+              // Available Rooms Only
+              // if (roomType.Rooms[0].count <= 0) {
+              //   return <RoomCard tabindex={0} key={i} onClick={() => changeSelectedRoom(roomType, true)} roomTitle={roomType.Name} bedType={roomType.BedTypes.TypeName} adultCount={roomType.MaxAdult} childCount={roomType.MaxChild} roomDesc={roomType.Description} price={price} selectedType={selectedRoom.Name} disabled={true} images={roomType.Images}></RoomCard>;
+              // }
+
+              // No Filter
+              // return (
+              //   <RoomCard tabindex={0} key={i} onClick={() => changeSelectedRoom(roomType, false)} roomTitle={roomType.Name} bedType={roomType.BedTypes.TypeName} adultCount={roomType.MaxAdult} childCount={roomType.MaxChild} roomDesc={roomType.Description} price={price} selectedType={selectedRoom.Name} disabled={false} availRooms={roomType.Rooms[0].count} images={roomType.Images} ></RoomCard>
+              // )
+            })}
+          </div>
+        </div>
+      )}
+
       <Form {...form}>
         <form
           ref={formRef}
@@ -613,7 +682,7 @@ function SelectRoomRateForm({
     promoCode,
     promoDetails,
     goToBookingDate,
-    setInitialBill
+    setInitialBill,
   } = useBookingStore();
 
   const { data: roomRates, isFetching } = useQuery({
@@ -621,10 +690,13 @@ function SelectRoomRateForm({
     queryFn: async () => {
       if (promoCode) {
         const { success, res } = await getRoomsTypOptions();
-        const { success:roomRateSuccess, res:roomRateRes } = await getPromoRoomRate(promoCode);
+        const { success: roomRateSuccess, res: roomRateRes } =
+          await getPromoRoomRate(promoCode);
         if (!success) throw new Error();
-        
-        setSelectedRoom(res?.find((type: any) => type.Id === promoDetails.RoomTypeId));
+
+        setSelectedRoom(
+          res?.find((type: any) => type.Id === promoDetails.RoomTypeId),
+        );
         return roomRateRes;
       } else {
         const { success, res } = await getCurrentRoomTypeRate(selectedRoom.Id);
@@ -634,7 +706,11 @@ function SelectRoomRateForm({
     },
   });
 
-  const { data: originalRate, isLoading: originalRateLoading, error: originalRateError} = useQuery({
+  const {
+    data: originalRate,
+    isLoading: originalRateLoading,
+    error: originalRateError,
+  } = useQuery({
     enabled: promoCode.length > 0,
     queryKey: ["originalRate", selectedRoom.Id],
     queryFn: async () => {
@@ -642,18 +718,22 @@ function SelectRoomRateForm({
       if (!success) throw new Error();
       return res;
     },
-  })
+  });
 
-  const {data: roomAmenities, isLoading: roomAmenitiesLoading, error, isError} = useQuery({
+  const {
+    data: roomAmenities,
+    isLoading: roomAmenitiesLoading,
+    error,
+    isError,
+  } = useQuery({
     queryKey: ["roomAmenities", selectedRoom.Id],
     queryFn: async () => {
-      console.log(selectedRoom)
+      console.log(selectedRoom);
       const data = await getRoomAmenities(selectedRoom.Id);
       if (isError) throw new Error(error.message);
       return data;
     },
-  })
-
+  });
 
   const formSchema = z.object({
     extraAdultCount: z.string().default("0"),
@@ -675,7 +755,9 @@ function SelectRoomRateForm({
 
   return (
     <div
-      className={cn("m-4 gap-2 space-y-4 rounded-sm xl:mx-auto xl:w-3/4 2xl:w-2/3")}
+      className={cn(
+        "m-4 gap-2 space-y-4 rounded-sm xl:mx-auto xl:w-3/4 2xl:w-2/3",
+      )}
     >
       {/* <Card
         className={cn("flex flex-col-reverse overflow-hidden", "md:flex-row")}
@@ -759,18 +841,26 @@ function SelectRoomRateForm({
           />
         </div>
       </Card> */}
-      {!isFetching && !roomAmenitiesLoading && !originalRateLoading && roomAmenities ? (
-        <RoomRatesCard roomType={selectedRoom} roomRate={roomRates} roomAmenities={roomAmenities} roomRateOrig={originalRate}></RoomRatesCard>
+      {!isFetching &&
+      !roomAmenitiesLoading &&
+      !originalRateLoading &&
+      roomAmenities ? (
+        <RoomRatesCard
+          roomType={selectedRoom}
+          roomRate={roomRates}
+          roomAmenities={roomAmenities}
+          roomRateOrig={originalRate}
+        ></RoomRatesCard>
       ) : (
-        <Loader2 size={40} className="animate-spin mx-auto" color="gray" />
-      ) }
+        <Loader2 size={40} className="mx-auto animate-spin" color="gray" />
+      )}
       <div className={cn("mt-4 flex justify-center gap-4", "")}>
         <Button
           disabled={pageState === 0}
           variant={"destructive"}
           onClick={() => {
             console.log(pageState);
-            setInitialBill(0)
+            setInitialBill(0);
             if (promoCode) {
               goToBookingDate();
             } else {
@@ -786,14 +876,13 @@ function SelectRoomRateForm({
           form="bookingForm"
           onClick={() => {
             setSelectedRoomRate(roomRates);
-            if(adultGuests > selectedRoomRate.MaxAdult){
+            if (adultGuests > selectedRoomRate.MaxAdult) {
               setExtraAdult(adultGuests - selectedRoomRate.MaxAdult);
             }
-            if(childGuests > selectedRoomRate.MaxChild){
+            if (childGuests > selectedRoomRate.MaxChild) {
               setExtraChild(childGuests - selectedRoomRate.MaxChild);
             }
 
-            
             goNextPage();
           }}
         >
@@ -852,7 +941,7 @@ function CustomerDetailsForm({
     city,
     zipCode,
     province,
-    setProvince
+    setProvince,
   } = useBookingStore();
 
   const [discountLoading, setDiscountLoading] = useState(false);
@@ -860,23 +949,30 @@ function CustomerDetailsForm({
   const formSchema = z
     .object({
       firstName: z.string().min(1, { message: "Please enter your first name" }),
-      lastName: z.string().min(1, { message: "Please enter your last name" }),  
+      lastName: z.string().min(1, { message: "Please enter your last name" }),
       birthDate: z.date().refine((data) => data < new Date(), {
         message: "Please enter a valid date",
       }),
       country: z.string().min(1, { message: "Please enter your country" }),
       email: z.string().email({ message: "Please enter a valid email" }),
       confirmEmail: z.string().email({ message: "Please enter a valid email" }),
-      contactNumber: z.coerce.string().regex(/^\d+$/, { message: "Number can only contain digits." }).min(6, {message: "Number must contain at least 6 numbers."}).max(11, {message: "Number must contain at most 11 numbers."}),
+      contactNumber: z.coerce
+        .string()
+        .regex(/^\d+$/, { message: "Number can only contain digits." })
+        .min(6, { message: "Number must contain at least 6 numbers." })
+        .max(11, { message: "Number must contain at most 11 numbers." }),
       request: z.string(),
       address1: z.string(),
       address2: z.string().optional(),
       city: z.string().min(1, { message: "Please enter a city" }),
-      province: z.string().min(1, {message: "Please enter a province"}),
+      province: z.string().min(1, { message: "Please enter a province" }),
       zipCode: z.coerce.string().min(1, { message: "Please enter a zip code" }),
-      termsAndCondition: z.boolean().default(false).refine((val) => val, {
-        message: "Please accept the terms and conditions",
-      }),
+      termsAndCondition: z
+        .boolean()
+        .default(false)
+        .refine((val) => val, {
+          message: "Please accept the terms and conditions",
+        }),
       notForBooker: z.boolean().default(false),
       voucherCode: z.string().optional(),
     })
@@ -907,36 +1003,48 @@ function CustomerDetailsForm({
       address2: address2,
       city: city,
       province: province,
-      zipCode: zipCode
+      zipCode: zipCode,
     },
   });
 
   async function checkVoucher(voucherCode: string) {
-    setDiscountLoading(true);
-    setAppliedDiscount({} as any);
-    const data = await checkDiscount(voucherCode, {
-      roomTypeId: selectedRoomRate.RoomTypeId,
-      startDate: checkInRange.from,
-      endDate: checkInRange.to,
-      nights: totalDays,
-      bill: initialBill
-    })
-
-    if (data.success) {
-      setAppliedDiscount({
-        id: data.res?.Id,
-        name: data.res?.DiscountName,
-        code: data.res?.DiscountCode,
-        type: data.res?.DiscountType,
-        value: data.res?.DiscountValue
-      });
+    if (voucherCode == "") {
+      form.setError("voucherCode", { message: "Please enter a voucher code." });
       form.clearErrors("voucherCode");
+      return;
+    } else {
+      setDiscountLoading(true);
+      setAppliedDiscount({} as any);
+      const data = await checkDiscount(voucherCode, {
+        roomTypeId: selectedRoomRate.RoomTypeId,
+        startDate: checkInRange.from,
+        endDate: checkInRange.to,
+        nights: totalDays,
+        bill: initialBill,
+      });
+
+      if (data.success) {
+        setAppliedDiscount({
+          id: data.res?.Id,
+          name: data.res?.DiscountName,
+          code: data.res?.DiscountCode,
+          type: data.res?.DiscountType,
+          value: data.res?.DiscountValue,
+        });
+        form.clearErrors("voucherCode");
+      }
+      if (!data.success) {
+        form.setError("voucherCode", { message: data.message });
+      }
+      console.log(data);
+      setDiscountLoading(false);
     }
-    if (!data.success) {
-      form.setError("voucherCode", { message: data.message });
-    }
-    console.log(data)
-    setDiscountLoading(false)
+  }
+
+  function removeDiscount() {
+    setAppliedDiscount({} as any);
+    form.clearErrors("voucherCode");
+    form.setValue("voucherCode", "");
   }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -960,7 +1068,7 @@ function CustomerDetailsForm({
   }
 
   useEffect(() => {
-    console.log(appliedDiscount)
+    console.log(appliedDiscount);
   }, [appliedDiscount]);
 
   return (
@@ -970,7 +1078,7 @@ function CustomerDetailsForm({
         "sm:w-9/12",
         "md:w-10/12",
         "xl:w-3/4",
-        "2xl:w-1/2"
+        "2xl:w-1/2",
       )}
     >
       <ToSPrivacyModal></ToSPrivacyModal>
@@ -979,24 +1087,28 @@ function CustomerDetailsForm({
           ref={formRef}
           id="bookingForm"
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-row gap-4 relative min-h-screen"
+          className="relative flex min-h-screen flex-row gap-4"
         >
-          <Card className="overflow-hidden w-2/3">
-            <div className={cn("flex w-full flex-col",)}>
-              <div className="flex flex-col p-4 gap-4">
-                <p className="font-bold text-xl">Contact Information</p>
-                <div
-                  className={cn(
-                    "grid w-full grid-cols-4 gap-x-4 gap-y-6",
-                    
-                  )}
-                >
+          <Card className="w-2/3 overflow-hidden">
+            <div className={cn("flex w-full flex-col")}>
+              <div className="flex flex-col gap-4 p-4">
+                <p className="text-xl font-bold">Contact Information</p>
+                <div className={cn("grid w-full grid-cols-4 gap-x-4 gap-y-6")}>
                   <FormField
                     name="firstName"
                     render={({ field }) => (
                       <FormItem className={cn("col-span-4", "sm:col-span-2")}>
                         <div className="flex items-center gap-2">
-                          <FormLabel onClick={() => console.log(`Extra Adult: ${extraAdult}`, `Extra Child: ${extraChild}`)}>First Name</FormLabel>
+                          <FormLabel
+                            onClick={() =>
+                              console.log(
+                                `Extra Adult: ${extraAdult}`,
+                                `Extra Child: ${extraChild}`,
+                              )
+                            }
+                          >
+                            First Name
+                          </FormLabel>
                           <FormMessage className="text-xs" />
                         </div>
                         <FormControl>
@@ -1028,7 +1140,10 @@ function CustomerDetailsForm({
                           <FormMessage className="text-xs" />
                         </div>
                         <FormControl>
-                          <DatePicker date={field.value} setDate={field.onChange} />
+                          <DatePicker
+                            date={field.value}
+                            setDate={field.onChange}
+                          />
                           {/* <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
@@ -1080,21 +1195,21 @@ function CustomerDetailsForm({
                       </FormItem>
                     )}
                   /> */}
-                    <FormField
-                      name="contactNumber"
-                      render={({ field }) => (
-                        <FormItem className={cn("col-span-4")}>
-                          <div className="flex items-center gap-2">
-                            <FormLabel>Contact Number</FormLabel>
-                            <FormMessage className="text-xs" />
-                          </div>
-                          <FormControl>
-                            <Input {...field} type="number"/>
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
+                  <FormField
+                    name="contactNumber"
+                    render={({ field }) => (
+                      <FormItem className={cn("col-span-4")}>
+                        <div className="flex items-center gap-2">
+                          <FormLabel>Contact Number</FormLabel>
+                          <FormMessage className="text-xs" />
+                        </div>
+                        <FormControl>
+                          <Input {...field} type="number" />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
                     name="email"
                     render={({ field }) => (
                       <FormItem className={cn("col-span-4")}>
@@ -1122,15 +1237,9 @@ function CustomerDetailsForm({
                       </FormItem>
                     )}
                   />
-                  
                 </div>
-                <p className="font-bold text-xl">Billing Address</p>
-                <div
-                  className={cn(
-                    "grid w-full grid-cols-4 gap-x-4 gap-y-6",
-                    
-                  )}
-                >
+                <p className="text-xl font-bold">Billing Address</p>
+                <div className={cn("grid w-full grid-cols-4 gap-x-4 gap-y-6")}>
                   <FormField
                     name="country"
                     render={({ field }) => (
@@ -1147,12 +1256,12 @@ function CustomerDetailsForm({
                                 role="combobox"
                                 className={cn(
                                   "w-full justify-between",
-                                  !field.value && "text-muted-foreground"
+                                  !field.value && "text-muted-foreground",
                                 )}
                               >
                                 {field.value
                                   ? countries.find(
-                                      (country) => country.name === field.value
+                                      (country) => country.name === field.value,
                                     )?.name
                                   : "Select Country"}
                                 <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -1173,7 +1282,7 @@ function CustomerDetailsForm({
                                       value={country.name}
                                       key={country.name}
                                       onSelect={() => {
-                                        form.setValue("country", country.name)
+                                        form.setValue("country", country.name);
                                       }}
                                     >
                                       {country.name}
@@ -1182,7 +1291,7 @@ function CustomerDetailsForm({
                                           "ml-auto h-4 w-4",
                                           country.name === field.value
                                             ? "opacity-100"
-                                            : "opacity-0"
+                                            : "opacity-0",
                                         )}
                                       />
                                     </CommandItem>
@@ -1201,7 +1310,16 @@ function CustomerDetailsForm({
                     render={({ field }) => (
                       <FormItem className={cn("col-span-4", "sm:col-span-2")}>
                         <div className="flex items-center gap-2">
-                          <FormLabel onClick={() => console.log(`Extra Adult: ${extraAdult}`, `Extra Child: ${extraChild}`)}>Address 1</FormLabel>
+                          <FormLabel
+                            onClick={() =>
+                              console.log(
+                                `Extra Adult: ${extraAdult}`,
+                                `Extra Child: ${extraChild}`,
+                              )
+                            }
+                          >
+                            Address 1
+                          </FormLabel>
                           <FormMessage className="text-xs" />
                         </div>
                         <FormControl>
@@ -1216,7 +1334,16 @@ function CustomerDetailsForm({
                     render={({ field }) => (
                       <FormItem className={cn("col-span-4", "sm:col-span-2")}>
                         <div className="flex items-center gap-2">
-                          <FormLabel onClick={() => console.log(`Extra Adult: ${extraAdult}`, `Extra Child: ${extraChild}`)}>Address 2</FormLabel>
+                          <FormLabel
+                            onClick={() =>
+                              console.log(
+                                `Extra Adult: ${extraAdult}`,
+                                `Extra Child: ${extraChild}`,
+                              )
+                            }
+                          >
+                            Address 2
+                          </FormLabel>
                           <FormMessage className="text-xs" />
                         </div>
                         <FormControl>
@@ -1231,7 +1358,16 @@ function CustomerDetailsForm({
                     render={({ field }) => (
                       <FormItem className={cn("col-span-4", "sm:col-span-2")}>
                         <div className="flex items-center gap-2">
-                          <FormLabel onClick={() => console.log(`Extra Adult: ${extraAdult}`, `Extra Child: ${extraChild}`)}>City</FormLabel>
+                          <FormLabel
+                            onClick={() =>
+                              console.log(
+                                `Extra Adult: ${extraAdult}`,
+                                `Extra Child: ${extraChild}`,
+                              )
+                            }
+                          >
+                            City
+                          </FormLabel>
                           <FormMessage className="text-xs" />
                         </div>
                         <FormControl>
@@ -1261,7 +1397,7 @@ function CustomerDetailsForm({
                     render={({ field }) => (
                       <FormItem className={cn("col-span-4", "sm:col-span-2")}>
                         <div className="flex items-center gap-2">
-                          <FormLabel >Postal / ZIP Code</FormLabel>
+                          <FormLabel>Postal / ZIP Code</FormLabel>
                           <FormMessage className="text-xs" />
                         </div>
                         <FormControl>
@@ -1270,7 +1406,7 @@ function CustomerDetailsForm({
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     name="request"
                     render={({ field }) => (
@@ -1285,9 +1421,8 @@ function CustomerDetailsForm({
                       </FormItem>
                     )}
                   />
-                  <div className="w-full col-span-4 my-2">
-                    <hr className="w-full"/>
-
+                  <div className="col-span-4 my-2 w-full">
+                    <hr className="w-full" />
                   </div>
                   <FormField
                     name="voucherCode"
@@ -1295,21 +1430,34 @@ function CustomerDetailsForm({
                       <FormItem className={cn("col-span-4")}>
                         <div className="flex items-center gap-2">
                           <FormLabel>Enter a voucher code</FormLabel>
-                          
                         </div>
                         <FormControl>
                           <div className="flex gap-4">
-                            <Input {...field} className="w-3/4" disabled={discountLoading} />
-                            <Button 
-                              className="w-1/4" 
-                              type="button" 
-                              onClick={ () => { 
-                                  console.log(field.value)
-                                  checkVoucher(field.value)
-                                }
+                            <Input
+                              {...field}
+                              className="w-3/4"
+                              disabled={discountLoading}
+                            />
+                            <Button
+                              className={`w-1/4 ${appliedDiscount.code ? "bg-red-500" : "bg-cstm-primary"} text-white`}
+                              type="button"
+                              disabled={discountLoading}
+                              onClick={() =>
+                                appliedDiscount.code
+                                  ? removeDiscount()
+                                  : checkVoucher(field.value)
                               }
                             >
-                              {discountLoading ? <Loader2 className="animate-spin" color="currentColor" /> : "Apply"}
+                              {discountLoading ? (
+                                <Loader2
+                                  className="animate-spin"
+                                  color="currentColor"
+                                />
+                              ) : appliedDiscount.code ? (
+                                "Remove"
+                              ) : (
+                                "Apply"
+                              )}
                             </Button>
                           </div>
                         </FormControl>
@@ -1318,21 +1466,21 @@ function CustomerDetailsForm({
                     )}
                   />
                 </div>
-                    
-
               </div>
             </div>
           </Card>
           <div className="w-full lg:w-1/3">
             <div className="sticky">
               <Card className="">
-                  <div
-                    className={cn(
-                      "w-full space-y-4 bg-cstm-secondary p-4 rounded-md"
-                    )}
-                  >
-                    <h1 className="text-xl font-bold text-white">Booking Details</h1>
-                    {/* <div className="grid-row-2 grid grid-cols-3 items-center gap-y-2">
+                <div
+                  className={cn(
+                    "w-full space-y-4 rounded-md bg-cstm-secondary p-4",
+                  )}
+                >
+                  <h1 className="text-xl font-bold text-white">
+                    Booking Details
+                  </h1>
+                  {/* <div className="grid-row-2 grid grid-cols-3 items-center gap-y-2">
                       <h1 className="text-white font-medium">Check-In</h1>
                       <p className="col-span-2">
                         <span className="bg-cstm-primary rounded-lg p-1 px-4 text-white">{format(new Date(checkInRange.from), "PPP")}</span>
@@ -1342,22 +1490,28 @@ function CustomerDetailsForm({
                         <span className="bg-cstm-primary rounded-lg p-1 px-4 text-white">{format(new Date(checkInRange.to), "PPP")}</span>
                       </p>
                     </div> */}
-                    <div className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-2 flex-wrap">
-                            <p className="text-white ">Check In</p>
-                            <div>
-                              <span className="bg-cstm-primary rounded-lg p-1 px-4 text-white">{format(new Date(checkInRange.from), "PPP")}</span>
-                            </div>
-                        </div>
-                        <div className="flex flex-col gap-2 flex-wrap">
-                            <p className="text-white ">Check Out</p>
-                            <div>
-                              <span className="bg-cstm-primary rounded-lg p-1 px-4 text-white">{format(new Date(checkInRange.to), "PPP")}</span>
-                            </div>
-                        </div>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col flex-wrap gap-2">
+                      <p className="text-white">Check In</p>
+                      <div>
+                        <span className="rounded-lg bg-cstm-primary p-1 px-4 text-white">
+                          {format(new Date(checkInRange.from), "PPP")}
+                        </span>
+                      </div>
                     </div>
-                    <p className="text-xl mt-8 font-bold text-white">Charge Summary</p>
-                    {/* <h1 className="text-xl font-bold text-white">Charge Summary</h1>
+                    <div className="flex flex-col flex-wrap gap-2">
+                      <p className="text-white">Check Out</p>
+                      <div>
+                        <span className="rounded-lg bg-cstm-primary p-1 px-4 text-white">
+                          {format(new Date(checkInRange.to), "PPP")}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="mt-8 text-xl font-bold text-white">
+                    Charge Summary
+                  </p>
+                  {/* <h1 className="text-xl font-bold text-white">Charge Summary</h1>
                     <div className="grid-row-4 grid grid-cols-3 items-center gap-y-2">
                       <h1 className="font-medium">Initial Bill</h1>
                       <p className="col-span-2 bg-cstm-secondary p-1 px-4 text-white">
@@ -1376,125 +1530,154 @@ function CustomerDetailsForm({
                         P {commafy(initialBill + initialBill * 0.12)}
                       </p>
                     </div> */}
-                    <div className="flex flex-col gap-4">
-                        <div className="flex justify-between">
-                            <p className="text-white/[.70]">Initial Bill</p>
-                            <p className="text-white">¥{formatCurrencyJP(initialBill)}</p>
-                        </div>
-                        <div className="flex justify-between">
-                            <p className="text-white/[.70]">VAT</p>
-                            <p className="text-white">¥{formatCurrencyJP(initialBill * 0.12)}</p>
-                        </div>
-                        {
-                          promoCode && (
-                            <div className="flex justify-between">
-                                <p className="text-white/[.70]">Promo Code</p>
-                                <p className="text-white">{promoCode || "None"}</p>
-                            </div>
-                          )
-                        }
-                        {
-                          appliedDiscount.code && (
-                            <div className="flex justify-between">
-                                <p className="text-white/[.70]">Discount Code</p>
-                                <div className="flex flex-col items-end">
-                                  <p className="text-green-500 font-bold ">{appliedDiscount.type === "percentage" ? `- ¥${formatCurrencyJP(getPercentage((initialBill + (initialBill * 0.12)), appliedDiscount.value))}` : `- ¥${formatCurrencyJP(appliedDiscount.value)}`}</p>
-                                  <p className="text-white text-sm text-end">{appliedDiscount.code ? appliedDiscount.type === "percentage" ? `${appliedDiscount.code} (${appliedDiscount.value}% off)` : `${appliedDiscount.code}`   : "None"}</p>
-                                </div>
-                            </div>
-                          )
-                        }
-                        <hr />
-                        <div className="flex justify-between bg-cstm-primary rounded-lg p-5">
-                            <p className="text-white/[.70]">TOTAL</p>
-                            <div className="flex flex-col items-end">
-                                <p className="text-white font-bold text-2xl">¥{formatCurrencyJP((initialBill + (initialBill * 0.12)) - (appliedDiscount && (appliedDiscount.type === "percentage" ? ((initialBill + (initialBill * 0.12)) * appliedDiscount.value / 100) : appliedDiscount.value) || 0))}</p>
-                                {
-                                  appliedDiscount.id && (
-                                    <p className="text-white/[.50] font-bold text-lg line-through">¥{formatCurrencyJP((initialBill + (initialBill * 0.12)))}</p>
-                                  )
-                                }
-                                <p className="text-sm italic text-white/[.70]">Including taxes and fees.</p>
-                            </div>
-                        </div>
-                        <div className="flex gap-4 rounded justify-center p-1">
-                            <SiMastercard color="#5F7486" size={36}></SiMastercard>
-                            <SiVisa color="#5F7486" size={36}></SiVisa>
-                            <SiAmericanexpress color="#5F7486" size={36}></SiAmericanexpress>
-                        </div>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex justify-between">
+                      <p className="text-white/[.70]">Initial Bill</p>
+                      <p className="text-white">
+                        ¥{formatCurrencyJP(initialBill)}
+                      </p>
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <FormField
-                        name="termsAndCondition"
-                        render={({ field }) => (
-                          <FormItem className="flex items-center gap-2 space-y-0">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                                className="data-[state=checked]:bg-cstm-primary border-cstm-primary w-5 h-5 text-xs"
-                              />
-                            </FormControl>
-                            <FormLabel className="m-0 text-xs text-white">
-                              <FormMessage></FormMessage>
-                              I have read and agreed to (name of hotel)'s{"  "}
-                              <Button
-                                type="button"
-                                className="m-0 h-max p-0 text-cstm-primary"
-                                variant="link"
-                                onClick={() => {
-                                  setToSPrivacyModalState(true);
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    setToSPrivacyModalState(true);
-                                  }
-                                }}
-                              >
-                                Terms of Service
-                              </Button>
-                              {"  "}and{"  "}
-                              <Button
-                                type="button"
-                                className="m-0 h-max p-0 text-cstm-primary"
-                                variant="link"
-                                onClick={() => {
-                                  setToSPrivacyModalState(true);
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    setToSPrivacyModalState(true);
-                                  }
-                                }}
-                              >
-                                Privacy Policy.
-                              </Button>
-                              
-                            </FormLabel>
-                          </FormItem>
+                    <div className="flex justify-between">
+                      <p className="text-white/[.70]">VAT</p>
+                      <p className="text-white">
+                        ¥{formatCurrencyJP(initialBill * 0.12)}
+                      </p>
+                    </div>
+                    {promoCode && (
+                      <div className="flex justify-between">
+                        <p className="text-white/[.70]">Promo Code</p>
+                        <p className="text-white">{promoCode || "None"}</p>
+                      </div>
+                    )}
+                    {appliedDiscount.code && (
+                      <div className="flex justify-between">
+                        <p className="text-white/[.70]">Discount Code</p>
+                        <div className="flex flex-col items-end">
+                          <p className="font-bold text-green-500">
+                            {appliedDiscount.type === "percentage"
+                              ? `- ¥${formatCurrencyJP(getPercentage(initialBill + initialBill * 0.12, appliedDiscount.value))}`
+                              : `- ¥${formatCurrencyJP(appliedDiscount.value)}`}
+                          </p>
+                          <p className="text-end text-sm text-white">
+                            {appliedDiscount.code
+                              ? appliedDiscount.type === "percentage"
+                                ? `${appliedDiscount.code} (${appliedDiscount.value}% off)`
+                                : `${appliedDiscount.code}`
+                              : "None"}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    <hr />
+                    <div className="flex justify-between rounded-lg bg-cstm-primary p-5">
+                      <p className="text-white/[.70]">TOTAL</p>
+                      <div className="flex flex-col items-end">
+                        <p className="text-2xl font-bold text-white">
+                          ¥
+                          {formatCurrencyJP(
+                            initialBill +
+                              initialBill * 0.12 -
+                              ((appliedDiscount &&
+                                (appliedDiscount.type === "percentage"
+                                  ? ((initialBill + initialBill * 0.12) *
+                                      appliedDiscount.value) /
+                                    100
+                                  : appliedDiscount.value)) ||
+                                0),
+                          )}
+                        </p>
+                        {appliedDiscount.id && (
+                          <p className="text-lg font-bold text-white/[.50] line-through">
+                            ¥
+                            {formatCurrencyJP(initialBill + initialBill * 0.12)}
+                          </p>
                         )}
-                      />
+                        <p className="text-sm italic text-white/[.70]">
+                          Including taxes and fees.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex justify-center gap-4 rounded p-1">
+                      <SiMastercard color="#5F7486" size={36}></SiMastercard>
+                      <SiVisa color="#5F7486" size={36}></SiVisa>
+                      <SiAmericanexpress
+                        color="#5F7486"
+                        size={36}
+                      ></SiAmericanexpress>
                     </div>
                   </div>
+                  <div className="flex flex-col gap-2">
+                    <FormField
+                      name="termsAndCondition"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center gap-2 space-y-0">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="h-5 w-5 border-cstm-primary text-xs data-[state=checked]:bg-cstm-primary"
+                            />
+                          </FormControl>
+                          <FormLabel className="m-0 text-xs text-white">
+                            <FormMessage></FormMessage>I have read and agreed to
+                            (name of hotel)'s{"  "}
+                            <Button
+                              type="button"
+                              className="m-0 h-max p-0 text-cstm-primary"
+                              variant="link"
+                              onClick={() => {
+                                setToSPrivacyModalState(true);
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  setToSPrivacyModalState(true);
+                                }
+                              }}
+                            >
+                              Terms of Service
+                            </Button>
+                            {"  "}and{"  "}
+                            <Button
+                              type="button"
+                              className="m-0 h-max p-0 text-cstm-primary"
+                              variant="link"
+                              onClick={() => {
+                                setToSPrivacyModalState(true);
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  setToSPrivacyModalState(true);
+                                }
+                              }}
+                            >
+                              Privacy Policy.
+                            </Button>
+                          </FormLabel>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
               </Card>
             </div>
             <div>
-              <Button type="button" onClick={() => {
-                form.setValue("firstName", "John");
-                form.setValue("lastName", "Doe");
-                form.setValue("birthDate", new Date("1998-01-01"));
-                form.setValue("country", "Philippines");
-                form.setValue("email", "jdoe@gmail.com");
-                form.setValue("confirmEmail", "jdoe@gmail.com");
-                form.setValue("contactNumber", "09123456789");
-                form.setValue("request", "Please provide extra towels.");
-                form.setValue("address1", "123 Main St.");
-                form.setValue("address2", "Brgy. 1");
-                form.setValue("city", "Manila");
-                form.setValue("province", "Metro Manila");
-                form.setValue("zipCode", "1000");
-              
-              }}
+              <Button
+                type="button"
+                onClick={() => {
+                  form.setValue("firstName", "John");
+                  form.setValue("lastName", "Doe");
+                  form.setValue("birthDate", new Date("1998-01-01"));
+                  form.setValue("country", "Philippines");
+                  form.setValue("email", "jdoe@gmail.com");
+                  form.setValue("confirmEmail", "jdoe@gmail.com");
+                  form.setValue("contactNumber", "09123456789");
+                  form.setValue("request", "Please provide extra towels.");
+                  form.setValue("address1", "123 Main St.");
+                  form.setValue("address2", "Brgy. 1");
+                  form.setValue("city", "Manila");
+                  form.setValue("province", "Metro Manila");
+                  form.setValue("zipCode", "1000");
+                }}
               >
                 ADD DUMMY
               </Button>
@@ -1502,7 +1685,7 @@ function CustomerDetailsForm({
           </div>
         </form>
       </Form>
-      
+
       <div className={cn("mt-4 flex justify-center gap-4", "")}>
         <Button
           disabled={pageState === 0}
@@ -1562,13 +1745,13 @@ function ConfirmForm({
     address2,
     city,
     zipCode,
-    province, 
+    province,
     resetStore,
     appliedDiscount,
-    setPageState
+    setPageState,
   } = useBookingStore();
 
-  const [bookingSuccess, setBookingSuccess] = useState(false)
+  const [bookingSuccess, setBookingSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const formSchema = z.object({
@@ -1593,7 +1776,7 @@ function ConfirmForm({
     province: z.string(),
     zipCode: z.string(),
     adultGuests: z.number(),
-    childGuests: z.number()
+    childGuests: z.number(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -1620,7 +1803,7 @@ function ConfirmForm({
       province,
       zipCode,
       adultGuests,
-      childGuests
+      childGuests,
     },
   });
 
@@ -1635,30 +1818,33 @@ function ConfirmForm({
   }
 
   async function sendTestEmail() {
+    const details = {
+      reservationId: "1",
+      bookingDate: new Date(),
+      checkIn: new Date(checkInRange.from),
+      checkOut: new Date(checkInRange.to),
+      roomType: selectedRoom.Name,
+      guestName: {
+        firstName: capitalizeFirstLetter(firstName),
+        lastName: capitalizeFirstLetter(lastName),
+      },
+      roomBill: initialBill,
+      promoCode: "",
+      promoCodeValue: "",
+      discountCode: appliedDiscount.code || "",
+      discountValue: appliedDiscount.value || 0,
+      discountType: appliedDiscount.type || "",
+    };
 
-      const details = {
-        reservationId: "1",
-        bookingDate: new Date(),
-        checkIn: new Date(checkInRange.from),
-        checkOut: new Date(checkInRange.to),
-        roomType: selectedRoom.Name,
-        guestName: {
-            firstName: capitalizeFirstLetter(firstName),
-            lastName: capitalizeFirstLetter(lastName)
-        },
-        roomBill: initialBill,
-        promoCode: "",
-        promoCodeValue: "",
-        discountCode: appliedDiscount.code || "",
-        discountValue: appliedDiscount.value || 0,
-        discountType: appliedDiscount.type || "",
-      }
-
-      sendEmail("", `${config.CompanyName} <${config.CompanyEmail}>`, "Booking Confirmation", emailStringConfirmBooking(config, details));
+    sendEmail(
+      "",
+      `${config.CompanyName} <${config.CompanyEmail}>`,
+      "Booking Confirmation",
+      emailStringConfirmBooking(config, details),
+    );
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-
     setIsLoading(true);
     let deviceTypeId;
     const userAgent =
@@ -1706,10 +1892,10 @@ function ConfirmForm({
       values.zipCode,
       values.adultGuests,
       values.childGuests,
-      1
+      1,
     );
 
-    if(success) {
+    if (success) {
       const reservationData = await checkReservation(res.Id);
 
       const details = {
@@ -1719,8 +1905,8 @@ function ConfirmForm({
         checkOut: new Date(values.checkOutDate),
         roomType: reservationData.res.TypeName,
         guestName: {
-            firstName: capitalizeFirstLetter(values.firstName),
-            lastName: capitalizeFirstLetter(values.lastName)
+          firstName: capitalizeFirstLetter(values.firstName),
+          lastName: capitalizeFirstLetter(values.lastName),
         },
         roomBill: initialBill,
         promoCode: "",
@@ -1728,32 +1914,32 @@ function ConfirmForm({
         discountCode: appliedDiscount.code || "",
         discountValue: appliedDiscount.value || 0,
         discountType: appliedDiscount.type || "",
-      }
+      };
 
-      sendEmail(values.email, `${config.CompanyName} <${config.CompanyEmail}>`, "Booking Confirmation", emailStringConfirmBooking(config, details));
+      sendEmail(
+        values.email,
+        `${config.CompanyName} <${config.CompanyEmail}>`,
+        "Booking Confirmation",
+        emailStringConfirmBooking(config, details),
+      );
       setBookingSuccess(true);
       //setPageState(0);
       resetStore();
-      
-    }
-    else {
+    } else {
       toast.error("Oops!", {
         description: "An error has occured. Please try again later.",
         closeButton: true,
         duration: 3500,
-      })
+      });
     }
-    setIsLoading(false)
+    setIsLoading(false);
   }
 
-  if(bookingSuccess) {
+  if (bookingSuccess) {
+    return <BookingSuccess />;
+  } else {
     return (
-      <BookingSuccess />
-    )
-  }
-  else {
-    return (
-      <div className="mx-auto px-3 lg:px-0 lg:w-3/4">
+      <div className="mx-auto px-3 lg:w-3/4 lg:px-0">
         <Form {...form}>
           <form id="bookingForm" onSubmit={form.handleSubmit(onSubmit)}></form>
         </Form>
@@ -1848,107 +2034,161 @@ function ConfirmForm({
           </Card>
         </div> */}
         <div className="flex flex-col gap-4">
-            <div className="flex flex-col md:flex-row gap-4">
-                <div className="w-full  md:w-2/3 p-5 flex flex-col gap-4 rounded-lg bg-cstm-secondary">
-                    <p className="text-white font-bold text-xl">Payment Instructions</p>
-                    <div className="flex flex-col md:flex-row justify-between bg-cstm-primary rounded-lg p-5">
-                          <p className="text-white/[.70]">TOTAL</p>
-                          <div className="flex flex-col items-start md:items-end">
-                            <p className="text-white font-bold text-2xl">¥{formatCurrencyJP((initialBill + (initialBill * 0.12)) - (appliedDiscount && (appliedDiscount.type === "percentage" ? ((initialBill + (initialBill * 0.12)) * appliedDiscount.value / 100) : appliedDiscount.value) || 0))}</p>
-                            {
-                              appliedDiscount.id && (
-                                <p className="text-white/[.50] font-bold text-lg line-through">¥{formatCurrencyJP((initialBill + (initialBill * 0.12)))}</p>
-                              )
-                            }
-                              <p className="text-sm italic text-white/[.70]">Including fees and taxes.</p>
-                          </div>
-                    </div>
-                    {/* <p className="text-white">You may finish your booking, but see to it that you pay the amount specified within the next 24 hours.</p>
+          <div className="flex flex-col gap-4 md:flex-row">
+            <div className="flex w-full flex-col gap-4 rounded-lg bg-cstm-secondary p-5 md:w-2/3">
+              <p className="text-xl font-bold text-white">
+                Payment Instructions
+              </p>
+              <div className="flex flex-col justify-between rounded-lg bg-cstm-primary p-5 md:flex-row">
+                <p className="text-white/[.70]">TOTAL</p>
+                <div className="flex flex-col items-start md:items-end">
+                  <p className="text-2xl font-bold text-white">
+                    ¥
+                    {formatCurrencyJP(
+                      initialBill +
+                        initialBill * 0.12 -
+                        ((appliedDiscount &&
+                          (appliedDiscount.type === "percentage"
+                            ? ((initialBill + initialBill * 0.12) *
+                                appliedDiscount.value) /
+                              100
+                            : appliedDiscount.value)) ||
+                          0),
+                    )}
+                  </p>
+                  {appliedDiscount.id && (
+                    <p className="text-lg font-bold text-white/[.50] line-through">
+                      ¥{formatCurrencyJP(initialBill + initialBill * 0.12)}
+                    </p>
+                  )}
+                  <p className="text-sm italic text-white/[.70]">
+                    Including fees and taxes.
+                  </p>
+                </div>
+              </div>
+              {/* <p className="text-white">You may finish your booking, but see to it that you pay the amount specified within the next 24 hours.</p>
                     <p className="text-white/[.70]">Once paid, please send us a copy of the scanned deposit slip via email or by calling us at Contact Number for verification purpose. Upon verifying your payment, a confirmation of reservation will be sent to your email. </p> */}
-                    <div>
-                      {parse(config?.PaymentInstructions)}
-                    </div>
-                </div>
-  
-                <div className="w-full md:w-1/3 p-5 flex flex-col gap-4 rounded-lg bg-cstm-secondary">
-                    <p className="text-white font-bold text-xl">Customer Details</p>
-                    <div className="flex flex-col gap-4 items-center text-white">
-                        <CircleUserRoundIcon strokeWidth={1} size={120} color="white"></CircleUserRoundIcon>
-                        <p className="font-bold text-lg"><span className="p-3 rounded-3xl bg-cstm-primary">{firstName} {lastName}</span></p>
-                        <p>{email}</p>
-                        <p>{contactNumber}</p>
-                    </div>
-                </div>
+              <div>{parse(config?.PaymentInstructions)}</div>
             </div>
-            <div className="flex flex-col md:flex-row gap-4">
-                <div className="w-full md:w-1/3 p-5 flex flex-col gap-4 rounded-lg bg-cstm-secondary">
-                    <p className="text-white font-bold text-xl">Room Details</p>
-                    <p className="font-bold text-lg text-white">{selectedRoom.Name}</p>
-                    {selectedRoom.Images &&
-                      <div className="relative h-[150px]">
-                        <Image className="rounded-md object-cover" src={selectedRoom.Images[0]} alt="Beach" fill />
-                      </div>
-                    }
-                    <div className="flex items-start gap-4 transition flex-col">
-                      <div className={`flex gap-2 items-center text-cstm-primary`}>
-                          <BedDoubleIcon size={16} className="transition"/>
-                          <p className="transition">{selectedRoom.BedType} </p>
-                      </div>
-                      <div className={`flex gap-2 items-center text-cstm-primary`}>
-                          <CircleUserRoundIcon size={16} className="transition"/>
-                          <p className="transition">{selectedRoom.MaxAdult > 1 ? `${selectedRoom.MaxAdult} Adults` : `${selectedRoom.MaxAdult} Adult`} </p>
-                      </div>
-                      <div className={`flex gap-2 items-center text-cstm-primary`}>
-                          <BabyIcon size={16} className="transition"/>
-                          <p className="transition max-h-[100px]">{selectedRoom.MaxChild > 1 ? `${selectedRoom.MaxChild} Children` : `${selectedRoom.MaxChild} Child`}</p>
-                      </div>
-                    </div>
+
+            <div className="flex w-full flex-col gap-4 rounded-lg bg-cstm-secondary p-5 md:w-1/3">
+              <p className="text-xl font-bold text-white">Customer Details</p>
+              <div className="flex flex-col items-center gap-4 text-white">
+                <CircleUserRoundIcon
+                  strokeWidth={1}
+                  size={120}
+                  color="white"
+                ></CircleUserRoundIcon>
+                <p className="text-lg font-bold">
+                  <span className="rounded-3xl bg-cstm-primary p-3">
+                    {firstName} {lastName}
+                  </span>
+                </p>
+                <p>{email}</p>
+                <p>{contactNumber}</p>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 md:flex-row">
+            <div className="flex w-full flex-col gap-4 rounded-lg bg-cstm-secondary p-5 md:w-1/3">
+              <p className="text-xl font-bold text-white">Room Details</p>
+              <p className="text-lg font-bold text-white">
+                {selectedRoom.Name}
+              </p>
+              {selectedRoom.Images && (
+                <div className="relative h-[150px]">
+                  <Image
+                    className="rounded-md object-cover"
+                    src={selectedRoom.Images[0]}
+                    alt="Beach"
+                    fill
+                  />
                 </div>
-  
-                <div className="w-full md:w-2/3 p-5 rounded-lg bg-cstm-secondary">
-                    <p className="text-white font-bold text-xl mb-8">Reservation Details</p>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-12">
-                        <div className="flex flex-col">
-                            <p className="text-cstm-primary font-bold">{new Date().toLocaleDateString()}</p>
-                            <p className="text-white/[.70]">Transaction Date</p>
-                        </div>
-                        <div className="flex flex-col">
-                            <p className="text-cstm-primary font-bold">{adultGuests + childGuests} Guests</p>
-                            <p className="text-white/[.70]">Expected Guests</p>
-                        </div>
-                        <div className="flex flex-col">
-                            <p className="text-cstm-primary font-bold">{checkInRange.from.toLocaleDateString()}</p>
-                            <p className="text-white/[.70]">Check-In Date</p>
-                        </div>
-                        <div className="flex flex-col">
-                            <p className="text-cstm-primary font-bold">{checkInRange.to.toLocaleDateString()}</p>
-                            <p className="text-white/[.70]">Check-Out Date</p>
-                        </div>
-                        <div className="flex flex-col">
-                            <p className="text-cstm-primary font-bold">{selectedRoom.Name}</p>
-                            <p className="text-white/[.70]">Booked Room</p>
-                        </div>
+              )}
+              <div className="flex flex-col items-start gap-4 transition">
+                <div className={`flex items-center gap-2 text-cstm-primary`}>
+                  <BedDoubleIcon size={16} className="transition" />
+                  <p className="transition">{selectedRoom.BedType} </p>
+                </div>
+                <div className={`flex items-center gap-2 text-cstm-primary`}>
+                  <CircleUserRoundIcon size={16} className="transition" />
+                  <p className="transition">
+                    {selectedRoom.MaxAdult > 1
+                      ? `${selectedRoom.MaxAdult} Adults`
+                      : `${selectedRoom.MaxAdult} Adult`}{" "}
+                  </p>
+                </div>
+                <div className={`flex items-center gap-2 text-cstm-primary`}>
+                  <BabyIcon size={16} className="transition" />
+                  <p className="max-h-[100px] transition">
+                    {selectedRoom.MaxChild > 1
+                      ? `${selectedRoom.MaxChild} Children`
+                      : `${selectedRoom.MaxChild} Child`}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full rounded-lg bg-cstm-secondary p-5 md:w-2/3">
+              <p className="mb-8 text-xl font-bold text-white">
+                Reservation Details
+              </p>
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-12">
+                <div className="flex flex-col">
+                  <p className="font-bold text-cstm-primary">
+                    {new Date().toLocaleDateString()}
+                  </p>
+                  <p className="text-white/[.70]">Transaction Date</p>
+                </div>
+                <div className="flex flex-col">
+                  <p className="font-bold text-cstm-primary">
+                    {adultGuests + childGuests} Guests
+                  </p>
+                  <p className="text-white/[.70]">Expected Guests</p>
+                </div>
+                <div className="flex flex-col">
+                  <p className="font-bold text-cstm-primary">
+                    {checkInRange.from.toLocaleDateString()}
+                  </p>
+                  <p className="text-white/[.70]">Check-In Date</p>
+                </div>
+                <div className="flex flex-col">
+                  <p className="font-bold text-cstm-primary">
+                    {checkInRange.to.toLocaleDateString()}
+                  </p>
+                  <p className="text-white/[.70]">Check-Out Date</p>
+                </div>
+                <div className="flex flex-col">
+                  <p className="font-bold text-cstm-primary">
+                    {selectedRoom.Name}
+                  </p>
+                  <p className="text-white/[.70]">Booked Room</p>
+                </div>
+              </div>
+              <div className="mt-4 flex flex-col justify-center self-end rounded-lg bg-cstm-primary p-3">
+                <p className="font-bold text-white">Questions?</p>
+                <p className="text-white/[.70]">
+                  You may reach us through our contact numbers and email below:
+                </p>
+                <>
+                  {config.CompanyContact && (
+                    <div className="mt-4 flex gap-4">
+                      <PhoneIcon size={16} className="text-white" />
+                      <p className="text-white/[.70]">
+                        {config.CompanyContact}
+                      </p>
                     </div>
-                    <div className="p-3 flex flex-col bg-cstm-primary rounded-lg justify-center self-end mt-4">
-                        <p className="text-white font-bold">Questions?</p>
-                        <p className="text-white/[.70]">You may reach us through our contact numbers and email below:</p>
-                        <>
-                        {
-                          config.CompanyContact &&
-                          <div className="flex gap-4 mt-4"> 
-                            <PhoneIcon size={16} className="text-white"/>
-                            <p className="text-white/[.70]">{config.CompanyContact}</p>
-                          </div>
-                        }
-                        {
-                          config.CompanyEmail &&
-                          <div className="flex gap-4"> 
-                            <AtSignIcon size={16} className="text-white"/>
-                            <p className="text-white/[.70] text-wrap">{config.CompanyEmail}</p>
-                          </div>
-                        }
-                        </>
-                        {/* <div className="flex gap-4 mt-4"> 
+                  )}
+                  {config.CompanyEmail && (
+                    <div className="flex gap-4">
+                      <AtSignIcon size={16} className="text-white" />
+                      <p className="text-wrap text-white/[.70]">
+                        {config.CompanyEmail}
+                      </p>
+                    </div>
+                  )}
+                </>
+                {/* <div className="flex gap-4 mt-4"> 
                             <PhoneIcon size={16} className="text-white"/>
                             <p className="text-white/[.70]">(123) 456-7890</p>
                         </div>
@@ -1956,9 +2196,9 @@ function ConfirmForm({
                             <AtSignIcon size={16} className="text-white"/>
                             <p className="text-white/[.70] text-wrap">service@abchotel.com</p>
                         </div> */}
-                    </div>
-                </div>
+              </div>
             </div>
+          </div>
         </div>
         <div className={cn("mt-4 flex justify-center gap-4", "")}>
           <Button
@@ -1970,12 +2210,16 @@ function ConfirmForm({
           >
             Back
           </Button>
-          <Button className="bg-cstm-primary" type="submit" form="bookingForm" disabled={isLoading}>
+          <Button
+            className="bg-cstm-primary"
+            type="submit"
+            form="bookingForm"
+            disabled={isLoading}
+          >
             Finish Booking
           </Button>
         </div>
       </div>
     );
   }
-
 }
