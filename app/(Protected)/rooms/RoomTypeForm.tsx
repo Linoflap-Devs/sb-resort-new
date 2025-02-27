@@ -24,7 +24,7 @@ import {
   editRoomType,
   getAmenities,
   getEditValues,
-  getRoomAmenities
+  getRoomAmenities,
 } from "@/app/ServerAction/rooms.action";
 import { toast } from "sonner";
 import { useTranslation } from "next-export-i18n";
@@ -45,18 +45,20 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
   const generalI18n = t("general");
   const { bedTypeOptionsQuery, imageUploadMaxMB } = useGlobalStore();
   const { data: bedTypeOptions, isLoading: bedLoading } = bedTypeOptionsQuery();
-  const [imgObjArray, setImgObjArray] = useState<ImageUploadObject[]>([] as ImageUploadObject[]);
-  const [imgUploadCount, setImgUploadCount] = useState(0)
+  const [imgObjArray, setImgObjArray] = useState<ImageUploadObject[]>(
+    [] as ImageUploadObject[],
+  );
+  const [imgUploadCount, setImgUploadCount] = useState(0);
   const [imgUp, setImgUp] = useState<File>({} as File);
-  const [selectedAmenities, setSelectedAmenities] = useState<number[]>([])
-  const [amenitySearch, setAmenitySearch] = useState<string>("")
-
-
- 
+  const [selectedAmenities, setSelectedAmenities] = useState<number[]>([]);
+  const [amenitySearch, setAmenitySearch] = useState<string>("");
 
   const router = useRouter();
 
-  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL as string, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string);
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
+  );
 
   const { data: editValues, isLoading } = useQuery({
     enabled: !bedLoading,
@@ -76,46 +78,51 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
   const { data: amenities, isLoading: amenitiesLoading } = useQuery({
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    queryKey: ["GetAmenities"], 
+    queryKey: ["GetAmenities"],
     queryFn: async () => {
-      return (await getAmenities()).res as RoomAmenity[]
-    }
-  })
+      return (await getAmenities()).res as RoomAmenity[];
+    },
+  });
 
   async function uploadImage(file: File) {
-    let path =  `${file.name}`
-    
+    let path = `${file.name}`;
+
     const { data, error } = await supabase.storage
       .from("images")
       .upload(path, file, {
         cacheControl: "3600",
-        upsert: false
-      })
+        upsert: false,
+      });
 
     if (error) {
-      console.log(error)
+      console.log(error);
     }
 
     const { data: publicUrl } = await supabase.storage
       .from("images")
-      .getPublicUrl(path)
-  
-    return publicUrl
+      .getPublicUrl(path);
+
+    return publicUrl;
   }
 
   const toggleAmenity = (id: number) => {
-    if(selectedAmenities.includes(id)){
-      setSelectedAmenities(selectedAmenities.filter(amenity => amenity !== id))
+    if (selectedAmenities.includes(id)) {
+      setSelectedAmenities(
+        selectedAmenities.filter((amenity) => amenity !== id),
+      );
     } else {
-      setSelectedAmenities([...selectedAmenities, id])
+      setSelectedAmenities([...selectedAmenities, id]);
     }
-  }
+  };
 
-  const filteredAmenities = amenities?.filter(amenity => {
-    return amenity.Label.toLowerCase().includes(amenitySearch.toLowerCase()) || amenity.Description.toLowerCase().includes(amenitySearch.toLowerCase())
-  })
+  const filteredAmenities = amenities?.filter((amenity) => {
+    return (
+      amenity.Label.toLowerCase().includes(amenitySearch.toLowerCase()) ||
+      amenity.Description.toLowerCase().includes(amenitySearch.toLowerCase())
+    );
+  });
 
-  const formSchema = z.object({ 
+  const formSchema = z.object({
     /* Room Details */
     roomTypeName: z.string().min(1, { message: "Required" }),
     adultCount: z.string().min(1, { message: "Required" }),
@@ -132,7 +139,7 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
     /* Descrption */
     description: z.string().min(1, { message: "Required" }),
     image_urls: z.array(z.string().url().optional()),
-    amenities: z.array(z.number().optional())
+    amenities: z.array(z.number().optional()),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -146,11 +153,11 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
       /* ============ */
       weekendRoomRate: id ? editValues?.WeekendRoomRate.toString() : "",
       extraChildWeekEndRate: id
-      ? editValues?.WeekendExtraChildRate.toString()
-      : "",
+        ? editValues?.WeekendExtraChildRate.toString()
+        : "",
       extraAdultWeekEndRate: id
-      ? editValues?.WeekendExtraAdultRate.toString()
-      : "",
+        ? editValues?.WeekendExtraAdultRate.toString()
+        : "",
       /* ------------ */
       baseRoomRate: id ? editValues?.BaseRoomRate.toString() : "",
       extraChildWeekDayRate: id ? editValues?.ExtraChildRate.toString() : "",
@@ -162,7 +169,7 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
   });
 
   useEffect(() => {
-    console.log("trigger")
+    console.log("trigger");
     if (editValues && bedTypeOptions) {
       form.reset({
         roomTypeName: editValues.RoomType,
@@ -180,12 +187,12 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
         amenities: editValues.Amenities || [],
       });
     }
-    console.log(amenities, selectedAmenities)
-    console.log(editValues)
+    console.log(amenities, selectedAmenities);
+    console.log(editValues);
   }, [editValues, bedTypeOptions, form]);
 
-  console.log(editValues?.BedTypeId.toString())
-  console.log(form.getValues("bedType"))
+  console.log(editValues?.BedTypeId.toString());
+  console.log(form.getValues("bedType"));
 
   const addMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -199,9 +206,10 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
       toast.success("Room Type Added", {
         description: "Room Type Added Successfully",
       });
+      router.push("/rooms/viewroomtypes");
     },
     onError: (error) => {
-      console.log(error)
+      console.log(error);
       toast.error("Adding Room Type Failed"),
         {
           description:
@@ -236,46 +244,49 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // Validation
-    const sizeError = imgObjArray?.some((img: ImageUploadObject) => img.isSizeExceeded)
+    const sizeError = imgObjArray?.some(
+      (img: ImageUploadObject) => img.isSizeExceeded,
+    );
 
-    if (sizeError) { 
-      console.log("size check")
+    if (sizeError) {
+      console.log("size check");
       toast.error(`One or more images exceed ${imageUploadMaxMB} MB.`);
       return;
     }
-    
-    const sonner = toast.loading("Uploading Images...")
+
+    const sonner = toast.loading("Uploading Images...");
     toast.loading("Uploading Images...", {
       id: sonner,
-      duration: Infinity
-    })
+      duration: Infinity,
+    });
 
     const supabaseUrls = await Promise.all(
-      imgObjArray.map( async (img: ImageUploadObject) => {
-        if(img.url.includes("blob:") || img.url.includes("localhost")){
-          console.log(img)
+      imgObjArray.map(async (img: ImageUploadObject) => {
+        if (img.url.includes("blob:") || img.url.includes("localhost")) {
+          console.log(img);
           const publicUrl = await uploadImage(img.file as File);
-          console.log(publicUrl)
-          setImgUploadCount(prev => prev + 1)
-          toast.loading(`Uploaded ${imgUploadCount} ${imgUploadCount > 1 ? "images" : "image"}`, {
-            id: sonner,
-            duration: Infinity
-          })
-          if(publicUrl){
-            return publicUrl?.publicUrl
+          console.log(publicUrl);
+          setImgUploadCount((prev) => prev + 1);
+          toast.loading(
+            `Uploaded ${imgUploadCount} ${imgUploadCount > 1 ? "images" : "image"}`,
+            {
+              id: sonner,
+              duration: Infinity,
+            },
+          );
+          if (publicUrl) {
+            return publicUrl?.publicUrl;
           }
-      }
-      return img.url
-    })
-  )
+        }
+        return img.url;
+      }),
+    );
 
-    values.image_urls = supabaseUrls
-    console.log(values)
+    values.image_urls = supabaseUrls;
+    console.log(values);
 
     if (id) {
-
-      if(values.amenities != selectedAmenities) {
-        
+      if (values.amenities != selectedAmenities) {
       }
 
       editMutation.mutate({
@@ -283,17 +294,16 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
         RateTypeId: editValues?.RateTypeId,
         RoomRateId: editValues?.RoomRateID,
         RoomTypeId: editValues?.RoomTypeId,
-        amenitiesOld: selectedAmenities
+        amenitiesOld: selectedAmenities,
       });
     } else {
-      
       addMutation.mutate(values);
     }
 
-    toast.success("Room Type Saved");
+    toast.success("Room Type added successfully");
     setTimeout(() => {
-      toast.dismiss()
-    }, 3000)
+      toast.dismiss();
+    }, 3000);
   }
 
   useEffect(() => {
@@ -303,18 +313,18 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
         name: url.split("/").pop(),
         size: -1,
         isSizeExceeded: false,
-        file: null
-      }))
+        file: null,
+      }));
 
       setImgObjArray(existingImgs);
     }
-  }, [editValues])
+  }, [editValues]);
 
   useEffect(() => {
-    if(editValues?.Amenities.length > 0) {
-      setSelectedAmenities(editValues.Amenities)
+    if (editValues?.Amenities.length > 0) {
+      setSelectedAmenities(editValues.Amenities);
     }
-  }, [editValues])
+  }, [editValues]);
 
   // useEffect(() => {
   //   console.log("useeffect trigger")
@@ -336,15 +346,15 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
   //   }
   // }, [editValues, id, form])
 
-  if(isLoading || bedLoading){
+  if (isLoading || bedLoading) {
     return (
-      <div className="w-full h-full p-4 flex flex-col justify-center items-center">
-        <div className="w-full flex justify-center">
+      <div className="flex h-full w-full flex-col items-center justify-center p-4">
+        <div className="flex w-full justify-center">
           <Loader2 size={40} className="animate-spin" />
         </div>
         <p>Loading Form...</p>
       </div>
-    )
+    );
   }
   return (
     <div className="w-full p-4">
@@ -359,27 +369,34 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
       } */}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="flex justify-between mb-4">
-            <p className="text-2xl font-semibold text-cstm-secondary">{ id && editValues ? `Editing Room Type ${editValues?.RoomType}` : "New Room Type" }</p>
+          <div className="mb-4 flex justify-between">
+            <p className="text-2xl font-semibold text-cstm-secondary">
+              {id && editValues
+                ? `Editing Room Type ${editValues?.RoomType}`
+                : "New Room Type"}
+            </p>
             <div className="flex gap-4">
               <Button
-                className="border-2 border-cstm-secondary text-cstm-secondary bg-transparent"
+                className="border-2 border-cstm-secondary bg-transparent text-cstm-secondary"
                 onClick={(e) => {
                   e.preventDefault();
                   router.push("/rooms/viewroomtypes");
                 }}
-              > 
+              >
                 {generalI18n.cancel}
               </Button>
-              <Button className="bg-cstm-secondary" type="submit" >
-                {id && editValues ? roomsI18n.editRoomType : roomsI18n.addRoomType }
+              <Button className="bg-cstm-secondary" type="submit">
+                {id && editValues ? generalI18n.update : roomsI18n.addRoomType}
               </Button>
             </div>
           </div>
           <div className="flex items-start gap-4">
             <div className="flex w-1/2 flex-col gap-4">
               <Card className="bg-cstm-secondary">
-                <CardHeader className="flex rounded-t-md bg-cstm-primary p-3 pl-5 text-xl font-semibold text-white" onClick={() => console.log(form.formState.errors)}>
+                <CardHeader
+                  className="flex rounded-t-md bg-cstm-primary p-3 pl-5 text-xl font-semibold text-white"
+                  onClick={() => console.log(form.formState.errors)}
+                >
                   {roomsI18n.roomDetails}
                 </CardHeader>
                 <div className="flex space-x-4 p-4">
@@ -493,7 +510,7 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                 <div className="flex space-x-4 p-4 pt-2">
                   <div className="w-1/2">
                     <h1 className="text-lg font-semibold text-white">
-                      {`${roomsI18n.weekendRate} (${(roomsI18n.saturdayToSunday)})`}
+                      {`${roomsI18n.weekendRate} (${roomsI18n.saturdayToSunday})`}
                     </h1>
                     <FormField
                       control={form.control}
@@ -506,10 +523,7 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                           </FormLabel>
                           <div>
                             <FormControl>
-                              <Input
-                                type="number"
-                                {...field}
-                              />
+                              <Input type="number" {...field} />
                             </FormControl>
                             <div className="h-4">
                               <FormMessage />
@@ -529,10 +543,7 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                           </FormLabel>
                           <div>
                             <FormControl>
-                              <Input
-                                type="number"
-                                {...field}
-                              />
+                              <Input type="number" {...field} />
                             </FormControl>
                             <div className="h-4">
                               <FormMessage />
@@ -552,10 +563,7 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                           </FormLabel>
                           <div>
                             <FormControl>
-                              <Input
-                                type="number"
-                                {...field}
-                              />
+                              <Input type="number" {...field} />
                             </FormControl>
                             <div className="h-4">
                               <FormMessage />
@@ -580,10 +588,7 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                           </FormLabel>
                           <div>
                             <FormControl>
-                              <Input
-                                type="number"
-                                {...field}
-                              />
+                              <Input type="number" {...field} />
                             </FormControl>
                             <div className="h-4">
                               <FormMessage />
@@ -603,10 +608,7 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                           </FormLabel>
                           <div>
                             <FormControl>
-                              <Input
-                                type="number"
-                                {...field}
-                              />
+                              <Input type="number" {...field} />
                             </FormControl>
                             <div className="h-4">
                               <FormMessage />
@@ -626,10 +628,7 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                           </FormLabel>
                           <div>
                             <FormControl>
-                              <Input
-                                type="number"
-                                {...field}
-                              />
+                              <Input type="number" {...field} />
                             </FormControl>
                             <div className="h-4">
                               <FormMessage />
@@ -641,7 +640,7 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                   </div>
                 </div>
               </Card>
-             
+
               <Card className="bg-cstm-secondary">
                 <CardHeader className="rounded-t-md bg-cstm-primary p-3 pl-5 text-xl font-semibold text-white">
                   {generalI18n.description}
@@ -654,7 +653,11 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                       <FormItem>
                         <div>
                           <FormControl>
-                            <Tiptap value={field.value} onChange={field.onChange} placeholder="Room description..." />
+                            <Tiptap
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="Room description..."
+                            />
                           </FormControl>
                           <div className="h-4">
                             <FormMessage />
@@ -671,7 +674,7 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                 <CardHeader className="rounded-t-md bg-cstm-primary p-3 pl-5 text-xl font-semibold text-white">
                   Room Images
                 </CardHeader>
-                <div className="p-4 p-t-0">
+                <div className="p-t-0 p-4">
                   <FormField
                     control={form.control}
                     name="image_urls"
@@ -688,21 +691,35 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                               multiple
                               accept="image/*"
                               onChange={(e) => {
-                                const fileArray = Array.from(e.target.files as FileList)
-                                const imgArray = Array.from(e.target.files as FileList).map((file) => {
+                                const fileArray = Array.from(
+                                  e.target.files as FileList,
+                                );
+                                const imgArray = Array.from(
+                                  e.target.files as FileList,
+                                ).map((file) => {
                                   return {
                                     name: file.name,
                                     size: file.size,
                                     file: file,
                                     url: URL.createObjectURL(file),
-                                    isSizeExceeded: file.size > convertMBtoBytes(imageUploadMaxMB)
-                                  }
-                                })
-                                const urls = fileArray.map((file) => URL.createObjectURL(file))
-                                console.log(field)
-                                setImgObjArray((prev: any) => [...prev, ...imgArray])
-                                field.onChange([...(field.value || []), ...urls])
-                                console.log(field)
+                                    isSizeExceeded:
+                                      file.size >
+                                      convertMBtoBytes(imageUploadMaxMB),
+                                  };
+                                });
+                                const urls = fileArray.map((file) =>
+                                  URL.createObjectURL(file),
+                                );
+                                console.log(field);
+                                setImgObjArray((prev: any) => [
+                                  ...prev,
+                                  ...imgArray,
+                                ]);
+                                field.onChange([
+                                  ...(field.value || []),
+                                  ...urls,
+                                ]);
+                                console.log(field);
                               }}
                             />
                             {/* <Input 
@@ -715,11 +732,12 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                               }} 
                             ></Input> */}
                           </FormControl>
-                          {
-                            field.value.length > 0 &&
+                          {field.value.length > 0 && (
                             <>
-                              <p className="text-white mt-4 text-sm">Image Previews</p>
-                              <div className="flex flex-col flex-wrap mt-4 gap-4">
+                              <p className="mt-4 text-sm text-white">
+                                Image Previews
+                              </p>
+                              <div className="mt-4 flex flex-col flex-wrap gap-4">
                                 {/* {field.value?.map((url, index) => (
                                   <div className="relative rounded">
                                     <img
@@ -742,20 +760,23 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                                 ))} */}
 
                                 {imgObjArray?.length == 0 &&
-                                 id &&
-                                 editValues?.Images ? (
+                                id &&
+                                editValues?.Images ? (
                                   <Skeleton className="w-full p-4">
                                     <Skeleton className="h-16 w-16"></Skeleton>
                                   </Skeleton>
-                                 ) : (
-                                   imgObjArray?.map((obj: any, index: number) => (
-                                     <div className={`relative flex rounded p-4 gap-4 bg-cstm-primary w-full ${obj.isSizeExceeded ? "border-2 border-red-500" : " border-2 border-white-200"}`} >
-                                       <img
-                                         key={index}
-                                         src={obj.url}
-                                         className="h-16 w-16 object-cover rounded"
-                                       />
-                                       {/* <Button 
+                                ) : (
+                                  imgObjArray?.map(
+                                    (obj: any, index: number) => (
+                                      <div
+                                        className={`relative flex w-full gap-4 rounded bg-cstm-primary p-4 ${obj.isSizeExceeded ? "border-2 border-red-500" : "border-white-200 border-2"}`}
+                                      >
+                                        <img
+                                          key={index}
+                                          src={obj.url}
+                                          className="h-16 w-16 rounded object-cover"
+                                        />
+                                        {/* <Button 
                                          type="button"
                                          className="absolute top-2 right-2 bg-red-800 rounded-full flex items-center justify-center"
                                          onClick={() => {
@@ -767,41 +788,66 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                                        >
                                          <XIcon color="white" size={12}></XIcon>
                                        </Button> */}
-                                       <div className="flex justify-between w-full">
-                                         <div className="flex-col w-full">
-                                           <p className="truncate font-bold overflow-hidden text-wrap">{obj.name}</p>
-                                           <div className="flex gap-2 flex-wrap items-center">
-                                             {
-                                               obj.size > 0 &&
-                                               <p className="text-black/[.70]">
-                                                 {obj.size / 1024 / 1024 < 1 ? Math.ceil(obj.size / 1024) + "KB" : (obj.size / 1024 / 1024).toFixed(1) + "MB"}
-                                               </p>
-                                             }
-                                             {obj.isSizeExceeded && <p className="text-red-700 text-sm">Image size exceeds the maximum limit of {imageUploadMaxMB} MB.</p>}
-                                           </div>
-                                         </div>
-                                         <div className="flex flex-col justify-center h-full">
-                                           <Button 
-                                             type="button"
-                                             variant="ghost"
-                                             onClick={() => {
-                                               const updatedImgs = field.value.filter((_, i) => i !== index)
-                                               const updatedImgArray = imgObjArray.filter((_: any, i: number) => i !== index)
-                                               console.log(updatedImgs)
-                                               setImgObjArray(updatedImgArray)
-                                               console.log(field) 
-                                               field.onChange(updatedImgs)
-                                               console.log(field)
-                                             }}
-                                           >
-                                             <XIcon color="currentColor" size={16}></XIcon>
-                                           </Button>
-                                         </div>
-                                       </div>
-                                     </div>
-                                   ))
-                                 )
-                                }
+                                        <div className="flex w-full justify-between">
+                                          <div className="w-full flex-col">
+                                            <p className="overflow-hidden truncate text-wrap font-bold">
+                                              {obj.name}
+                                            </p>
+                                            <div className="flex flex-wrap items-center gap-2">
+                                              {obj.size > 0 && (
+                                                <p className="text-black/[.70]">
+                                                  {obj.size / 1024 / 1024 < 1
+                                                    ? Math.ceil(
+                                                        obj.size / 1024,
+                                                      ) + "KB"
+                                                    : (
+                                                        obj.size /
+                                                        1024 /
+                                                        1024
+                                                      ).toFixed(1) + "MB"}
+                                                </p>
+                                              )}
+                                              {obj.isSizeExceeded && (
+                                                <p className="text-sm text-red-700">
+                                                  Image size exceeds the maximum
+                                                  limit of {imageUploadMaxMB}{" "}
+                                                  MB.
+                                                </p>
+                                              )}
+                                            </div>
+                                          </div>
+                                          <div className="flex h-full flex-col justify-center">
+                                            <Button
+                                              type="button"
+                                              variant="ghost"
+                                              onClick={() => {
+                                                const updatedImgs =
+                                                  field.value.filter(
+                                                    (_, i) => i !== index,
+                                                  );
+                                                const updatedImgArray =
+                                                  imgObjArray.filter(
+                                                    (_: any, i: number) =>
+                                                      i !== index,
+                                                  );
+                                                console.log(updatedImgs);
+                                                setImgObjArray(updatedImgArray);
+                                                console.log(field);
+                                                field.onChange(updatedImgs);
+                                                console.log(field);
+                                              }}
+                                            >
+                                              <XIcon
+                                                color="currentColor"
+                                                size={16}
+                                              ></XIcon>
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ),
+                                  )
+                                )}
                               </div>
                               {/* <div className="text-white">
                                 {field.value.map((url, index) => (
@@ -809,7 +855,7 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                                 ))}
                               </div> */}
                             </>
-                          }
+                          )}
                           <div className="h-4">
                             <FormMessage />
                           </div>
@@ -817,7 +863,6 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                       </FormItem>
                     )}
                   />
-                  
                 </div>
               </Card>
               <Card className="bg-cstm-secondary">
@@ -827,38 +872,43 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                 <FormField
                   control={form.control}
                   name="amenities"
-                  render={({field}) => {
+                  render={({ field }) => {
                     return (
                       <FormItem>
-                          {
-                            field.value.length > 0 && (
-                              <div className="flex flex-col gap-4 p-4">
-                                <p className="text-white font-bold">Selected Amenities ({field.value.length})</p>
-                                <div className="flex gap-4 flex-wrap">
-                                  {
-                                    field.value?.map((selectedId: any) => {
-                                      console.log("field value ", field.value)
-                                      let amenity = amenities?.find((item: any) => item.Id === selectedId);
-                                      return (
-                                        amenity && (
-                                          <div 
-                                            className="flex gap-4 p-2 items-center bg-cstm-primary rounded" 
-                                            tabIndex={0} 
-                                            role="button"
-                                            key={amenity.Id} 
-                                            onClick={() => {
-                                              const newValue = field.value.filter((id) => id !== selectedId)
-                                              field.onChange(newValue)
-                                            }}
-                                          >
-                                            <p className="text-white text-sm">{amenity.Label}</p>
-                                            <XIcon size={12} color="white"></XIcon>
-                                          </div>
-                                        )
-                                      );
-                                    })
-                                  }
-                                  {/* {
+                        {field.value.length > 0 && (
+                          <div className="flex flex-col gap-4 p-4">
+                            <p className="font-bold text-white">
+                              Selected Amenities ({field.value.length})
+                            </p>
+                            <div className="flex flex-wrap gap-4">
+                              {field.value?.map((selectedId: any) => {
+                                console.log("field value ", field.value);
+                                let amenity = amenities?.find(
+                                  (item: any) => item.Id === selectedId,
+                                );
+                                return (
+                                  amenity && (
+                                    <div
+                                      className="flex items-center gap-4 rounded bg-cstm-primary p-2"
+                                      tabIndex={0}
+                                      role="button"
+                                      key={amenity.Id}
+                                      onClick={() => {
+                                        const newValue = field.value.filter(
+                                          (id) => id !== selectedId,
+                                        );
+                                        field.onChange(newValue);
+                                      }}
+                                    >
+                                      <p className="text-sm text-white">
+                                        {amenity.Label}
+                                      </p>
+                                      <XIcon size={12} color="white"></XIcon>
+                                    </div>
+                                  )
+                                );
+                              })}
+                              {/* {
                                     amenities?.map((amenity: any) => (
                                       selectedAmenities.includes(amenity.Id) && (
                                         <div 
@@ -874,59 +924,65 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                                       )
                                     ))
                                   } */}
+                            </div>
+                          </div>
+                        )}
+                        <div className="p-4">
+                          <Input
+                            placeholder="Search for amenities..."
+                            value={amenitySearch}
+                            onChange={(e) => setAmenitySearch(e.target.value)}
+                          ></Input>
+                          <hr className="mt-4 border-white/[.20]"></hr>
+                        </div>
+
+                        <div className="flex max-h-[500px] flex-col gap-4 overflow-y-auto p-4 pt-0">
+                          {amenitiesLoading ? (
+                            <Loader2 size={40} className="animate-spin" />
+                          ) : (
+                            filteredAmenities?.map((amenity: any) => (
+                              <div
+                                key={amenity.Id}
+                                className={`flex items-center gap-4 rounded p-3 ${field.value.includes(amenity.Id) ? "bg-cstm-primary text-white" : "bg-white/[.85] text-black"} transition transition-all`}
+                              >
+                                <Checkbox
+                                  checked={field.value.includes(amenity.Id)}
+                                  onCheckedChange={() => {
+                                    const newValue = field.value.includes(
+                                      amenity.Id,
+                                    )
+                                      ? field.value.filter(
+                                          (id) => id !== amenity.Id,
+                                        )
+                                      : [...field.value, amenity.Id];
+
+                                    field.onChange(newValue);
+                                  }}
+                                  className="h-5 w-5 rounded border-0 border-cstm-primary transition transition-all data-[state=checked]:bg-white data-[state=unchecked]:bg-cstm-secondary data-[state=checked]:text-cstm-primary"
+                                />
+                                <div className="flex flex-col">
+                                  <p
+                                    className={`${field.value.includes(amenity.Id) ? "text-white" : "text-black"} font-semibold transition transition-all`}
+                                  >
+                                    {amenity.Label}
+                                  </p>
+                                  <p
+                                    className={`${field.value.includes(amenity.Id) ? "text-white/[.70]" : "text-black/[.70]"} text-sm transition transition-all`}
+                                  >
+                                    {amenity.Description}
+                                  </p>
                                 </div>
                               </div>
-                            )
-                          }
-                        <div className="p-4">
-                          <Input 
-                            placeholder="Search for amenities..."
-                            value={amenitySearch} 
-                            onChange={(e) => setAmenitySearch(e.target.value)} 
-                          ></Input>
-                          <hr className="border-white/[.20] mt-4"></hr>
+                            ))
+                          )}
                         </div>
-
-                        <div className="p-4 pt-0 flex flex-col gap-4 max-h-[500px] overflow-y-auto">
-                            {
-                              amenitiesLoading ? (
-                                <Loader2 size={40} className="animate-spin" />
-                              ) : (
-                                filteredAmenities?.map((amenity: any) => (
-                                  <div 
-                                    key={amenity.Id}
-                                    className={`p-3 rounded flex gap-4 items-center ${field.value.includes(amenity.Id) ? "bg-cstm-primary text-white" : "bg-white/[.85] text-black"} transition transition-all`}>
-                                    <Checkbox
-                                      checked={field.value.includes(amenity.Id)}
-                                      onCheckedChange={() => {
-                                        const newValue = field.value.includes(amenity.Id) ?
-                                        field.value.filter(((id) => id !== amenity.Id)) :
-                                        [...field.value, amenity.Id]
-
-                                        field.onChange(newValue)
-                                      }}
-                                      className="data-[state=checked]:bg-white data-[state=checked]:text-cstm-primary data-[state=unchecked]:bg-cstm-secondary data-[state=checked]:text-cstm-primary border-cstm-primary w-5 h-5 rounded border-0 transition transition-all"
-                                    />
-                                    <div className="flex flex-col">
-                                      <p className={`${field.value.includes(amenity.Id) ? "text-white" : "text-black"} font-semibold transition transition-all`}>{amenity.Label}</p>
-                                      <p className={`${field.value.includes(amenity.Id) ? "text-white/[.70]" : "text-black/[.70]"} text-sm transition transition-all`}>{amenity.Description}</p>
-                                    </div>
-                                  </div>
-                                ))
-                              )
-                            }
-                        </div>
-                        <FormMessage>
-
-                        </FormMessage>
+                        <FormMessage></FormMessage>
                       </FormItem>
-                    )
-                  }}>
-
-                </FormField>
+                    );
+                  }}
+                ></FormField>
               </Card>
             </div>
-              
           </div>
         </form>
       </Form>

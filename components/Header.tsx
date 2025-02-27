@@ -45,8 +45,12 @@ export default function Header({
         },
         {
           name: "Amenities",
-          url: "/rooms/amenities"
-        }
+          url: "/rooms/amenities",
+        },
+        {
+          name: "Room Rates",
+          url: "/rooms/roomrates",
+        },
       ],
     },
     {
@@ -111,9 +115,19 @@ export default function Header({
     },
     {
       name: "Settings",
-      url: "/settings"
+      url: "/settings",
     },
   ];
+  // Filter navigation items that match the current path
+  const matchingItems = navigationItems
+    .flatMap((item) => {
+      if (item.subNav) {
+        return [item, ...item.subNav];
+      }
+      return item;
+    })
+    .filter((item) => currentPath.includes(item.url));
+
   return (
     <div className="h-1/12 w-full bg-cstm-secondary">
       <div className="flex w-full flex-row justify-end px-6 py-2">
@@ -122,28 +136,15 @@ export default function Header({
       <div className="flex w-full items-center gap-2 border-b-2 border-cstm-secondary bg-cstm-primary px-6 py-1">
         <Breadcrumb>
           <BreadcrumbList className="text-cstm-tertiary">
-            {navigationItems
-              .flatMap((item) => {
-                if (item.subNav) {
-                  return [item, ...item.subNav];
-                }
-                return item;
-              })
-              .map((item, index) => {
-                if (currentPath.includes(item.url)) {
-                  return (
-                    <div className="flex items-center gap-2" key={index}>
-                      <BreadcrumbItem>
-                        <BreadcrumbLink href={item.url}>
-                          {item.name}
-                        </BreadcrumbLink>
-                      </BreadcrumbItem>
-                      <BreadcrumbSeparator />
-                    </div>
-                  );
-                }
-                return null;
-              })}
+            {matchingItems.map((item, index) => (
+              <div className="flex items-center gap-2" key={index}>
+                <BreadcrumbItem>
+                  <BreadcrumbLink href={item.url}>{item.name}</BreadcrumbLink>
+                </BreadcrumbItem>
+                {/* Only show separator if not the last item */}
+                {index < matchingItems.length - 1 && <BreadcrumbSeparator />}
+              </div>
+            ))}
           </BreadcrumbList>
         </Breadcrumb>
       </div>

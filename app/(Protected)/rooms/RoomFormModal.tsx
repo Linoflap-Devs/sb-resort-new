@@ -30,6 +30,7 @@ import i18n, { useTranslation } from "next-export-i18n";
 export default function RoomFormModal() {
   const { t } = useTranslation();
   const roomsI18n = t("RoomsPage");
+  const generali18n = t("general");
   const {
     roomFormModalState,
     setRoomFormModalState,
@@ -47,9 +48,11 @@ export default function RoomFormModal() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     values: {
-      roomNumber: selectedRoomData ? selectedRoomData.RoomNumber.toString() : "",
-      roomType:selectedRoomData ? selectedRoomData.RoomTypeId.toString() : "",
-      status:selectedRoomData ? selectedRoomData.StatusId.toString() : "",
+      roomNumber: selectedRoomData
+        ? selectedRoomData.RoomNumber.toString()
+        : "",
+      roomType: selectedRoomData ? selectedRoomData.RoomTypeId.toString() : "",
+      status: selectedRoomData ? selectedRoomData.StatusId.toString() : "",
     },
   });
 
@@ -172,7 +175,7 @@ export default function RoomFormModal() {
             />
             <DialogFooter>
               <Button className="bg-cstm-secondary" type="submit">
-                {selectedRoomData ? roomsI18n.editRoom : roomsI18n.addRoom}
+                {selectedRoomData ? generali18n.update : roomsI18n.addRoom}
               </Button>
             </DialogFooter>
           </form>

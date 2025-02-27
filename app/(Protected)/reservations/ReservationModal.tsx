@@ -199,7 +199,7 @@ export default function ReservationModal() {
               name="RoomTypeId"
               render={({ field }) => (
                 <FormItem className="flex flex-col justify-center space-y-1">
-                  <FormLabel className="text-left">Room Type</FormLabel>
+                  <FormLabel className="mb-2 text-left">Room Type</FormLabel>
                   <div>
                     <SelectComponent
                       placeholder="Select Room Type"
@@ -218,7 +218,7 @@ export default function ReservationModal() {
               name="RoomCount"
               render={({ field }) => (
                 <FormItem className="flex flex-col justify-center space-y-1">
-                  <FormLabel className="text-left">Room Count</FormLabel>
+                  <FormLabel className="mb-2 text-left">Room Count</FormLabel>
                   <div>
                     <FormControl>
                       <Input className="border" {...field} />
@@ -288,7 +288,9 @@ export default function ReservationModal() {
               name="ExtraChild"
               render={({ field }) => (
                 <FormItem className="flex flex-col justify-center space-y-1">
-                  <FormLabel className="text-left">Extra Child Count</FormLabel>
+                  <FormLabel className="mb-2 text-left">
+                    Extra Child Count
+                  </FormLabel>
                   <div>
                     <FormControl>
                       <Input className="border" {...field} />
@@ -303,7 +305,9 @@ export default function ReservationModal() {
               name="ExtraAdult"
               render={({ field }) => (
                 <FormItem className="flex flex-col justify-center space-y-1">
-                  <FormLabel className="text-left">Extra Adult Count</FormLabel>
+                  <FormLabel className="mb-2 text-left">
+                    Extra Adult Count
+                  </FormLabel>
                   <div>
                     <Input className="border" {...field} />
                   </div>
@@ -316,7 +320,7 @@ export default function ReservationModal() {
               name="Remarks"
               render={({ field }) => (
                 <FormItem className="flex flex-col justify-center space-y-1">
-                  <FormLabel className="text-left">Remarks</FormLabel>
+                  <FormLabel className="mb-2 text-left">Remarks</FormLabel>
                   <div>
                     <FormControl>
                       <Textarea

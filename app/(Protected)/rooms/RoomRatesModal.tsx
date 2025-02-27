@@ -85,9 +85,7 @@ export default function RoomRatesModal() {
         ? selectedRateData?.RateTypeId.toString()
         : "",
       validity: {
-        from: selectedRateData
-          ? selectedRateData?.ValidFrom 
-          : 0,
+        from: selectedRateData ? selectedRateData?.ValidFrom : 0,
         to: selectedRateData ? selectedRateData?.ValidTo : 0,
       },
       BaseRoomRate: selectedRateData
@@ -175,7 +173,7 @@ export default function RoomRatesModal() {
               name="RoomTypeId"
               render={({ field }) => (
                 <FormItem className="flex flex-col justify-center space-y-1">
-                  <FormLabel className="text-left">
+                  <FormLabel className="mb-2 text-left">
                     {roomsI18n.roomType}
                   </FormLabel>
                   <div>
@@ -197,13 +195,15 @@ export default function RoomRatesModal() {
               name="RateTypeId"
               render={({ field }) => (
                 <FormItem className="flex flex-col justify-center space-y-1">
-                  <FormLabel className="text-left">
+                  <FormLabel className="mb-2 text-left">
                     {roomsI18n.rateType}
                   </FormLabel>
                   <div>
                     <SelectComponent
                       className="w-full"
-                      options={RoomRateTypes}
+                      options={RoomRateTypes?.filter(
+                        (option: { value: number }) => option.value !== 2,
+                      )} // Fixed with type
                       state={field.value}
                       setState={field.onChange}
                     />
@@ -219,7 +219,7 @@ export default function RoomRatesModal() {
               name="validity"
               render={({ field }) => (
                 <FormItem className="flex flex-col justify-center space-y-1">
-                  <FormLabel className="flex flex-col items-center text-left">
+                  <FormLabel className="mb-2 flex flex-col items-center text-left">
                     {roomsI18n.validityDate}
                   </FormLabel>
                   <div className="flex flex-col items-start">
@@ -278,14 +278,16 @@ export default function RoomRatesModal() {
             <div className="flex flex-row gap-3 pt-2">
               <div className="w-1/2">
                 <h1 className="text-left text-sm font-semibold">
-                  {roomsI18n.weekdayRate}
+                  {"Weekday Room Rates"}
                 </h1>
                 <FormField
                   control={form.control}
                   name="BaseRoomRate"
                   render={({ field }) => (
                     <FormItem className="space-y-1">
-                      <FormLabel className="text-left">{roomsI18n.weekdayRate}</FormLabel>
+                      <FormLabel className="text-left">
+                        {roomsI18n.weekdayRate}
+                      </FormLabel>
                       <div>
                         <Input {...field} />
                         <div className="h-3">
@@ -327,8 +329,8 @@ export default function RoomRatesModal() {
                 />
               </div>
               <div className="w-1/2">
-              <h1 className="text-left text-sm font-semibold">
-                  {roomsI18n.weekendRate}
+                <h1 className="text-left text-sm font-semibold">
+                  {"Weekend Room Rates"}
                 </h1>
                 <FormField
                   control={form.control}
@@ -378,13 +380,8 @@ export default function RoomRatesModal() {
               </div>
             </div>
             <DialogFooter className="pt-4">
-              <DialogClose>
-                <Button variant={"ghost"} type="button">
-                  {generalI18n.cancel}
-                </Button>
-              </DialogClose>
               <Button className="bg-cstm-secondary" type="submit">
-                {selectedRateData ? generalI18n.update : generalI18n.add}
+                {selectedRateData ? generalI18n.update : roomsI18n.addRate}
               </Button>
             </DialogFooter>
           </form>

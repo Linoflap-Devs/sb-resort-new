@@ -9,7 +9,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDownIcon, ChevronsUpDownIcon, ChevronUpIcon, Ellipsis } from "lucide-react";
+import {
+  ChevronDownIcon,
+  ChevronsUpDownIcon,
+  ChevronUpIcon,
+  Ellipsis,
+} from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { deleteRoomType, getRoomTypes } from "@/app/ServerAction/rooms.action";
 import { ColumnDef } from "@tanstack/react-table";
@@ -68,44 +73,52 @@ export default function RoomTypeTable() {
     },
     {
       accessorKey: "TypeName",
-      header: ({column}: any) => {
+      header: ({ column }: any) => {
         return (
           <div className="flex">
-            <Button 
-              className="p-0 bg-transparent font-semibold flex gap-1"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            >
-              {roomsI18n.typeName} {
-                column.getIsSorted() === 'asc' ? 
-                <ChevronUpIcon size={12} /> : 
-                column.getIsSorted() === 'desc' ? <ChevronDownIcon size={12} /> : 
-                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+            <Button
+              className="flex gap-1 bg-transparent p-0 font-semibold"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
               }
+            >
+              {roomsI18n.typeName}{" "}
+              {column.getIsSorted() === "asc" ? (
+                <ChevronUpIcon size={12} />
+              ) : column.getIsSorted() === "desc" ? (
+                <ChevronDownIcon size={12} />
+              ) : (
+                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+              )}
             </Button>
           </div>
-        )
+        );
       },
       filterFn: "includesString",
       enableHiding: false,
     },
     {
       accessorKey: "BedType",
-      header: ({column}: any) => {
+      header: ({ column }: any) => {
         return (
           <div className="flex">
-            <Button 
-              className="p-0 bg-transparent font-semibold flex gap-1"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            >
-              {roomsI18n.bedType} {
-                column.getIsSorted() === 'asc' ? 
-                <ChevronUpIcon size={12} /> : 
-                column.getIsSorted() === 'desc' ? <ChevronDownIcon size={12} /> : 
-                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+            <Button
+              className="flex gap-1 bg-transparent p-0 font-semibold"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
               }
+            >
+              {roomsI18n.bedType}{" "}
+              {column.getIsSorted() === "asc" ? (
+                <ChevronUpIcon size={12} />
+              ) : column.getIsSorted() === "desc" ? (
+                <ChevronDownIcon size={12} />
+              ) : (
+                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+              )}
             </Button>
           </div>
-        )
+        );
       },
       cell: ({ cell }: any) => {
         return <div className="">{cell.getValue()}</div>;
@@ -113,22 +126,26 @@ export default function RoomTypeTable() {
     },
     {
       accessorKey: "Rooms",
-      header: ({column}: any) => {
+      header: ({ column }: any) => {
         return (
           <div className="flex justify-end">
-            <Button 
-              className="p-0 bg-transparent font-semibold flex gap-1"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            >
-              {generaI18n.quantity} {
-                column.getIsSorted() === 'asc' ? 
-                <ChevronUpIcon size={12} /> : 
-                column.getIsSorted() === 'desc' ? <ChevronDownIcon size={12} /> : 
-                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+            <Button
+              className="flex gap-1 bg-transparent p-0 font-semibold"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
               }
+            >
+              {generaI18n.quantity}{" "}
+              {column.getIsSorted() === "asc" ? (
+                <ChevronUpIcon size={12} />
+              ) : column.getIsSorted() === "desc" ? (
+                <ChevronDownIcon size={12} />
+              ) : (
+                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+              )}
             </Button>
           </div>
-        )
+        );
       },
       cell: ({ cell }: any) => {
         return <div className="text-right">{cell.getValue()[0].count}</div>;
@@ -136,22 +153,26 @@ export default function RoomTypeTable() {
     },
     {
       accessorKey: "MaxAdult",
-      header: ({column}: any) => {
+      header: ({ column }: any) => {
         return (
           <div className="flex justify-end">
-            <Button 
-              className="p-0 bg-transparent font-semibold flex gap-1"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            >
-              {roomsI18n.maxAdults} {
-                column.getIsSorted() === 'asc' ? 
-                <ChevronUpIcon size={12} /> : 
-                column.getIsSorted() === 'desc' ? <ChevronDownIcon size={12} /> : 
-                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+            <Button
+              className="flex gap-1 bg-transparent p-0 font-semibold"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
               }
+            >
+              {roomsI18n.maxAdults}{" "}
+              {column.getIsSorted() === "asc" ? (
+                <ChevronUpIcon size={12} />
+              ) : column.getIsSorted() === "desc" ? (
+                <ChevronDownIcon size={12} />
+              ) : (
+                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+              )}
             </Button>
           </div>
-        )
+        );
       },
       cell: ({ cell }: any) => {
         return <div className="text-right">{cell.getValue()}</div>;
@@ -159,22 +180,26 @@ export default function RoomTypeTable() {
     },
     {
       accessorKey: "MaxChild",
-      header: ({column}: any) => {
+      header: ({ column }: any) => {
         return (
           <div className="flex justify-end">
-            <Button 
-              className="p-0 bg-transparent font-semibold flex gap-1"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            >
-              {roomsI18n.maxChildren} {
-                column.getIsSorted() === 'asc' ? 
-                <ChevronUpIcon size={12} /> : 
-                column.getIsSorted() === 'desc' ? <ChevronDownIcon size={12} /> : 
-                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+            <Button
+              className="flex gap-1 bg-transparent p-0 font-semibold"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
               }
+            >
+              {roomsI18n.maxChildren}{" "}
+              {column.getIsSorted() === "asc" ? (
+                <ChevronUpIcon size={12} />
+              ) : column.getIsSorted() === "desc" ? (
+                <ChevronDownIcon size={12} />
+              ) : (
+                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+              )}
             </Button>
           </div>
-        )
+        );
       },
       cell: ({ cell }: any) => {
         return <div className="text-right">{cell.getValue()}</div>;
@@ -246,7 +271,7 @@ export default function RoomTypeTable() {
         isLoading={isLoading}
         data={roomTypes || []}
         columns={columns}
-        title={roomsI18n.roomType}
+        title={"Room Types"}
         columnToSearch={["TypeName", "BedType"]}
         searchPlaceholder={roomsI18n.searchRoomType}
         pagination={true}

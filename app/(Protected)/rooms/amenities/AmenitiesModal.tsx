@@ -35,149 +35,155 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import SelectComponent from "@/components/SelectComponent";
 import { useTranslation } from "next-export-i18n";
-import { addAmenity, addRoomRate, editAmenity, editRoomRate } from "@/app/ServerAction/rooms.action";
+import {
+  addAmenity,
+  addRoomRate,
+  editAmenity,
+  editRoomRate,
+} from "@/app/ServerAction/rooms.action";
 import { useEffect } from "react";
 
 export function AmenitiesModal() {
+  const { t } = useTranslation();
+  const amenityI18n = t("Amenity");
+  const genI18n = t("general");
 
-    const {t} = useTranslation();
-    const amenityI18n = t("Amenity");
-    const genI18n = t("general");
+  const {
+    amenityFormModalState,
+    setAmenityFormModalState,
+    selectedAmenity,
+    amenityQuery,
+  } = useGlobalStore();
 
-    const {
-        amenityFormModalState,
-        setAmenityFormModalState,
-        selectedAmenity,
-        amenityQuery
-    } = useGlobalStore()
+  const { refetch } = amenityQuery();
 
-    const {refetch} = amenityQuery()
+  const formSchema = z.object({
+    Label: z.string().min(1, "Required"),
+    Description: z.string().min(1, "Required"),
+  });
 
-    const formSchema = z.object({
-        Label: z.string().min(1, "Required"),
-        Description: z.string().min(1, "Required"),
-    });
+  const form = useForm<z.infer<typeof formSchema>>({
+    mode: "onChange",
+    resolver: zodResolver(formSchema),
+    values: {
+      Label: selectedAmenity.Label || "",
+      Description: selectedAmenity.Description || "",
+    },
+  });
 
-    const form = useForm<z.infer<typeof formSchema>>({
-      mode: "onChange",
-      resolver: zodResolver(formSchema),
-      values: {
-        Label: selectedAmenity.Label || "",
-        Description: selectedAmenity.Description || ""
-      }
-    });
-
-    const mutation = useMutation({
-        mutationFn: async (values: z.infer<typeof formSchema>) => {
-            const {res: data, error} = await editAmenity(selectedAmenity.Id, values.Label, values.Description)
-            
-            if(error) throw new Error("Error")
-
-            return data
-        },
-        onSuccess: (data) => {
-            toast.success(genI18n.success, {
-                description: amenityI18n.amenityUpdateSuccess
-            });
-            refetch();
-            setAmenityFormModalState(false);
-        },
-        onError: (error) => {
-            toast.error(error.message);
-        }
-      });
-      
-    const addMutation = useMutation({
-        mutationFn: async (values: z.infer<typeof formSchema>) => {
-           const { res:data, error } = await addAmenity(values.Label, values.Description)
-
-           if(error) throw new Error("Error")
-
-           return data
-        },
-        onSuccess: (data) => {
-          toast.success(genI18n.success, {
-            description: amenityI18n.amenityAddSuccess
-          })
-          refetch();
-          setAmenityFormModalState(false);
-        },
-        onError: (error) => {
-          console.log(error)
-          toast.error(error.message)
-        }
-
-    })
-
-    function onSubmit(values: z.infer<typeof formSchema>) {
-      selectedAmenity.label ? mutation.mutate(values) : addMutation.mutate(values);  
-    }
-
-    return (
-        <Dialog
-          open={amenityFormModalState}
-          onOpenChange={(open) => {
-            setAmenityFormModalState(open);
-          }}
-        >
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>
-                {selectedAmenity.Label ? amenityI18n.editAmenity : amenityI18n.addAmenity}
-              </DialogTitle>
-              <DialogDescription>
-                { selectedAmenity.Label ? amenityI18n.amenityEditDesc : amenityI18n.amenityAddDesc }
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...form}>
-              <form className="gap-4 flex flex-col" onSubmit={form.handleSubmit(onSubmit)}>
-                <FormField
-                  name="Label"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{ genI18n.label }</FormLabel>
-                      <Input
-                        placeholder={ genI18n.label }
-                        {...field}
-                      />
-                      <FormDescription>
-                        { amenityI18n.amenityLabelDesc}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}>
-                </FormField>
-                <FormField
-                  name="Description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{ genI18n.description }</FormLabel>
-                      <Input
-                        placeholder={ genI18n.description }
-                        {...field}
-                      />
-                      <FormDescription>
-                          { amenityI18n.amenityDescriptionDesc }
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}>
-                </FormField>
-                <DialogFooter>
-                <Button
-                  type="button"
-                  variant="ghost">
-                    { genI18n.cancel }
-                  </Button>
-                  <Button
-                  type="submit"
-                  variant="default">
-                    { genI18n.save }
-                  </Button>
-                </DialogFooter>
-                </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
+  const mutation = useMutation({
+    mutationFn: async (values: z.infer<typeof formSchema>) => {
+      const { res: data, error } = await editAmenity(
+        selectedAmenity.Id,
+        values.Label,
+        values.Description,
       );
+
+      if (error) throw new Error("Error");
+
+      return data;
+    },
+    onSuccess: (data) => {
+      toast.success(genI18n.success, {
+        description: amenityI18n.amenityUpdateSuccess,
+      });
+      refetch();
+      setAmenityFormModalState(false);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const addMutation = useMutation({
+    mutationFn: async (values: z.infer<typeof formSchema>) => {
+      const { res: data, error } = await addAmenity(
+        values.Label,
+        values.Description,
+      );
+
+      if (error) throw new Error("Error");
+
+      return data;
+    },
+    onSuccess: (data) => {
+      toast.success(genI18n.success, {
+        description: amenityI18n.amenityAddSuccess,
+      });
+      refetch();
+      setAmenityFormModalState(false);
+    },
+    onError: (error) => {
+      console.log(error);
+      toast.error(error.message);
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    selectedAmenity.label
+      ? mutation.mutate(values)
+      : addMutation.mutate(values);
+  }
+
+  return (
+    <Dialog
+      open={amenityFormModalState}
+      onOpenChange={(open) => {
+        setAmenityFormModalState(open);
+      }}
+    >
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>
+            {selectedAmenity.Label
+              ? amenityI18n.editAmenity
+              : amenityI18n.addAmenity}
+          </DialogTitle>
+          <DialogDescription>
+            {selectedAmenity.Label
+              ? amenityI18n.amenityEditDesc
+              : amenityI18n.amenityAddDesc}
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
+            <FormField
+              name="Label"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{genI18n.label}</FormLabel>
+                  <Input placeholder={genI18n.label} {...field} />
+                  <FormDescription>
+                    {amenityI18n.amenityLabelDesc}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            ></FormField>
+            <FormField
+              name="Description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{genI18n.description}</FormLabel>
+                  <Input placeholder={genI18n.description} {...field} />
+                  <FormDescription>
+                    {amenityI18n.amenityDescriptionDesc}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            ></FormField>
+            <DialogFooter>
+              <Button type="submit" variant="default">
+                {selectedAmenity.Label ? genI18n.update : genI18n.save}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
 }

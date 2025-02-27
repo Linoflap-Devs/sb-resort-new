@@ -21,6 +21,7 @@ export default function RoomRatesController() {
     selectedRoomRateRoomTypeFilter,
     setSelectedRoomRateRoomTypeFilter,
     resetSelectOptState,
+    setSelectedRateData,
   } = useGlobalStore();
 
   /*   const [date, setDate] = React.useState<DateRange | undefined>({
@@ -85,23 +86,26 @@ export default function RoomRatesController() {
           setState={setSelectedRoomRateRoomTypeFilter}
           state={selectedRoomRateRoomTypeFilter}
         />
-        <Button onClick={ () => {
-          //reset selected filter to empty string, since the parameter is a string.
-          setSelectedRoomRateRoomTypeFilter("")
-          resetSelectOptState()
-        }
-          } className="flex items-center gap-2 bg-cstm-primary text-cstm-tertiary">
+        <Button
+          onClick={() => {
+            //reset selected filter to empty string, since the parameter is a string.
+            setSelectedRoomRateRoomTypeFilter("");
+            resetSelectOptState();
+          }}
+          className="flex items-center gap-2 bg-cstm-primary text-cstm-tertiary"
+        >
           <FilterX size={20} />
         </Button>
       </div>
       <Button
         className="flex items-center gap-2 bg-cstm-secondary text-cstm-tertiary"
         onClick={() => {
+          setSelectedRateData(null); // Add this line to reset the selected rate data
           setRateFormModalState(true);
         }}
       >
         <Plus size={16} />
-        {roomsI18n.addRate}
+        {"Add Room Rates"}
       </Button>
     </div>
   );
