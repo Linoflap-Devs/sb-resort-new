@@ -268,7 +268,7 @@ export default function RoomRatesModal() {
                         />
                       </PopoverContent>
                     </Popover>
-                    <div className="h-3 text-center">
+                    <div className="mx-auto h-3 w-[300px] text-center">
                       <FormMessage />
                     </div>
                   </div>
