@@ -375,6 +375,62 @@ export async function getBedTypeOptions() {
   // console.log(data);
   return { success: true, res: data };
 }
+export async function getBedTypes(id: number = -1){
+  if(id == -1) {
+    const { data, error } = await supabase
+    .from("BedTypes")
+    .select("*")
+    .eq("IsDeleted", false);
+    if (error) {
+      return { success: false, res: error.message, };
+    }
+    return { success: true, res: data };
+  }
+
+  const { data, error } = await supabase
+    .from("BedTypes")
+    .select("*")
+    .eq("Id", id)
+    .neq("IsDeleted", true);
+  if (error) {
+    return { success: false, res: error.message, };
+  }
+  return { success: true, res: data };
+}
+export async function addBedType(TypeName: string){
+  const {data, error} = await supabase
+    .from("BedTypes")
+    .insert({ TypeName: TypeName})
+    .select()
+  
+  if(error) {
+    console.log(error)
+    return { success: false, res: error.message, error: error.message };
+  }
+
+  return { success: true, res: data, }
+}
+export async function deleteBedType(value: any) {
+  const { data, error } = await supabase
+    .from("BedTypes")
+    .update({ IsDeleted: true })
+    .eq("Id", value);
+  if (error) {
+    return { success: false, res: data, error: error.message };
+  }
+  return { success: true, res: data };
+}
+export async function editBedType(Id: number, TypeName: string){ 
+  const { data, error } = await supabase
+    .from("BedTypes")
+    .update({ TypeName: TypeName})
+    .eq("Id", Id);
+  if (error) {
+    return { success: false, res: data, error: error.message };
+  }
+  return { success: true, res: data };
+}
+
 export async function getRoomRateTypeOptions() {
   const { data, error } = await supabase
     .from("RoomRateType")
