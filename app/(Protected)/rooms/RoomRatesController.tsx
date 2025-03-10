@@ -8,6 +8,12 @@ import { Button } from "@/components/ui/button";
 import { useGlobalStore } from "@/store/useGlobalStore";
 import SelectComponent from "@/components/SelectComponent";
 import { useTranslation } from "next-export-i18n";
+import { useEffect } from "react";
+
+type RoomTypeOptionType = {
+  label: string;
+  value: string;
+};
 
 export default function RoomRatesController() {
   const { t } = useTranslation();
@@ -24,12 +30,31 @@ export default function RoomRatesController() {
     setSelectedRateData,
   } = useGlobalStore();
 
+  useEffect(() => {
+    // Reset filter state on mount
+    setSelectedRoomRateRoomTypeFilter("");
+    resetSelectOptState();
+  }, [setSelectedRoomRateRoomTypeFilter, resetSelectOptState]);
+
+  const { data: RoomTypeOption } = roomTypeOptionsQuery();
+
+  // Deduplicate room type options based on the 'label' property
+  const uniqueRoomTypeOptions = React.useMemo(() => {
+    if (!RoomTypeOption) return [];
+    const seenLabels = new Set();
+    return RoomTypeOption.filter((option: RoomTypeOptionType) => {
+      if (seenLabels.has(option.label)) {
+        return false;
+      }
+      seenLabels.add(option.label);
+      return true;
+    });
+  }, [RoomTypeOption]);
+
   /*   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(),
     to: addDays(new Date(2025, 0, 20), 20),
   }); */
-
-  const { data: RoomTypeOption } = roomTypeOptionsQuery();
 
   return (
     <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-cstm-border px-4 py-3">
@@ -80,7 +105,7 @@ export default function RoomRatesController() {
           </PopoverContent>
         </Popover> */}
         <SelectComponent
-          options={RoomTypeOption}
+          options={uniqueRoomTypeOptions}
           valueType="label"
           placeholder={roomsI18n.selectRoomType}
           setState={setSelectedRoomRateRoomTypeFilter}

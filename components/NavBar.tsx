@@ -93,6 +93,12 @@ const NavBar = memo(function ({
           icon: <BedDouble />,
           role: [2, 3],
         },
+        {
+          name: "Bed Types",
+          url: "/rooms/bedtype",
+          icon: <BedDouble />,
+          role: [2, 3],
+        },
       ],
     },
     {
@@ -224,12 +230,9 @@ const NavBar = memo(function ({
       name: navBari18n.discounts,
       url: "/discounts",
       icon: (
-        <CoinsIcon 
-          size={logoStyle.size}
-          strokeWidth={logoStyle.strokeWidth}
-        />
+        <CoinsIcon size={logoStyle.size} strokeWidth={logoStyle.strokeWidth} />
       ),
-      role: [1,2,3],
+      role: [1, 2, 3],
       showAtSubNav: false,
       subNav: [],
     },
@@ -321,7 +324,7 @@ const NavBar = memo(function ({
                     >
                       {item.showAtSubNav && (
                         <Link
-                          className={`text-sm flex flex-row items-center gap-3 rounded-r-3xl py-1 font-semibold shadow transition-all ${
+                          className={`flex flex-row items-center gap-3 rounded-r-3xl py-1 text-sm font-semibold shadow transition-all ${
                             item.url === currentPath
                               ? "w-10/12 bg-cstm-secondary-dark pl-12 text-white"
                               : "w-8/12 bg-cstm-background pl-8 hover:w-9/12 hover:bg-cstm-primary hover:pl-9 hover:text-white"
@@ -338,7 +341,7 @@ const NavBar = memo(function ({
                           <Link
                             href={subItem.url}
                             key={index}
-                            className={`text-sm flex flex-row items-center gap-3 rounded-r-3xl py-1 font-semibold shadow transition-all ${
+                            className={`flex flex-row items-center gap-3 rounded-r-3xl py-1 text-sm font-semibold shadow transition-all ${
                               selected
                                 ? "w-10/12 bg-cstm-secondary-dark pl-12 text-white"
                                 : "w-8/12 bg-cstm-background pl-8 hover:w-9/12 hover:bg-cstm-primary hover:pl-9 hover:text-white"

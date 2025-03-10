@@ -8,7 +8,8 @@ import {
   getRooms,
   getRoomStatusOptions,
   getRoomTypeOptions,
-  getRoomTypes
+  getRoomTypes,
+  getBedTypes,
 } from "@/app/ServerAction/rooms.action";
 import { useQuery } from "@tanstack/react-query";
 import { create } from "zustand";
@@ -126,7 +127,8 @@ export const useGlobalStore = create<GlobalState>()((set) => ({
   setSelectedBillingReservationStatusFilter: (data) => set(() => ({ selectedBillingReservationStatusFilter: data })),
   selectedRoomRateRoomTypeFilter: "",
   setSelectedRoomRateRoomTypeFilter: (data: string) => set(() => ({selectedRoomRateRoomTypeFilter: data})),
-
+  selectedBedTypeFilter: "",
+  setSelectedBedTypeFilter: (data: string) => set(() => ({selectedBedTypeFilter: data})),
   // Guest
 
   guestEditModalState: false,
@@ -147,7 +149,8 @@ export const useGlobalStore = create<GlobalState>()((set) => ({
       userRoleFilterOpt: "",
       selectedBillingStatusFilter: "",
       selectedDiscountsFilter: "",
-      selectedBillingReservationStatusFilter: ""
+      selectedBillingReservationStatusFilter: "",
+      selectedBedTypeFilter: "",
     });
   },
 
@@ -156,6 +159,12 @@ export const useGlobalStore = create<GlobalState>()((set) => ({
   setSelectedAmenity: (amenity: any) => set(() => ({ selectedAmenity: amenity })),
   amenityFormModalState: false,
   setAmenityFormModalState: (state: boolean) => set(() => ({ amenityFormModalState: state })), 
+
+  // Bed Type
+   selectedBedType: [],
+  setSelectedBedType: (amenity: any) => set(() => ({ selectedBedType: amenity })),
+  bedTypeFormModalState: false,
+  setBedTypeFormModalState: (state: boolean) => set(() => ({ bedTypeFormModalState: state })), 
 
   // Discounts
   discountFormModalState: false,
@@ -297,6 +306,14 @@ export const useGlobalStore = create<GlobalState>()((set) => ({
       queryKey: ["GetAmenities"],
       queryFn: async () => {
         return (await getAmenities()).res as any
+      }
+    })
+  },
+  bedTypeQuery: () => {
+    return useQuery({
+      queryKey: ["getBedTypes"],
+      queryFn: async () => {
+        return (await getBedTypes()).res as any
       }
     })
   },
@@ -511,6 +528,8 @@ interface GlobalState {
   selectedRoomTypePromosFilter: string;
   selectedRoomRateRoomTypeFilter: string;
   setSelectedRoomRateRoomTypeFilter: (data: string) => void;
+  selectedBedTypeFilter: string;
+  setSelectedBedTypeFilter: (data: string) => void;
   setSelectedRoomTypePromosFilter: (data: string) => void;
   selectedBillingStatusFilter: string;
   setSelectedBillingStatusFilter: (data: string) => void;
@@ -534,6 +553,13 @@ interface GlobalState {
   amenityFormModalState: boolean;
   setAmenityFormModalState: (state: boolean) => void;
   amenityQuery: () => any;
+
+  // Bed TYpes
+  selectedBedType: any;
+  setSelectedBedType: (data: any) => void;
+  bedTypeFormModalState: boolean;
+  setBedTypeFormModalState: (state: boolean) => void;
+  bedTypeQuery: () => any;
 
   // Config
   getConfigQuery: () => any;

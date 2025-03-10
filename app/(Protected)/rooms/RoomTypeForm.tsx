@@ -873,6 +873,15 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                   control={form.control}
                   name="amenities"
                   render={({ field }) => {
+                    // Compute all filtered IDs and whether all are selected.
+                    const allFilteredIds =
+                      filteredAmenities?.map((amenity: any) => amenity.Id) ||
+                      [];
+                    const isAllSelected =
+                      filteredAmenities &&
+                      filteredAmenities.length > 0 &&
+                      allFilteredIds.every((id) => field.value.includes(id));
+
                     return (
                       <FormItem>
                         {field.value.length > 0 && (
@@ -882,7 +891,6 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                             </p>
                             <div className="flex flex-wrap gap-4">
                               {field.value?.map((selectedId: any) => {
-                                console.log("field value ", field.value);
                                 let amenity = amenities?.find(
                                   (item: any) => item.Id === selectedId,
                                 );
@@ -903,37 +911,47 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                                       <p className="text-sm text-white">
                                         {amenity.Label}
                                       </p>
-                                      <XIcon size={12} color="white"></XIcon>
+                                      <XIcon size={12} color="white" />
                                     </div>
                                   )
                                 );
                               })}
-                              {/* {
-                                    amenities?.map((amenity: any) => (
-                                      selectedAmenities.includes(amenity.Id) && (
-                                        <div 
-                                          className="flex gap-4 p-2 items-center bg-cstm-primary rounded" 
-                                          tabIndex={0} 
-                                          role="button"
-                                          key={amenity.Id} 
-                                          onClick={() => toggleAmenity(amenity.Id)}
-                                        >
-                                          <p className="text-white text-sm">{amenity.Label}</p>
-                                          <XIcon size={12} color="white"></XIcon>
-                                        </div>
-                                      )
-                                    ))
-                                  } */}
                             </div>
                           </div>
                         )}
+
                         <div className="p-4">
                           <Input
                             placeholder="Search for amenities..."
                             value={amenitySearch}
                             onChange={(e) => setAmenitySearch(e.target.value)}
-                          ></Input>
-                          <hr className="mt-4 border-white/[.20]"></hr>
+                          />
+                          <hr className="mt-4 border-white/[.20]" />
+                        </div>
+
+                        <div className="flex items-center px-4 py-2">
+                          <Checkbox
+                            checked={isAllSelected}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                // Add all filtered amenity IDs, preserving any existing selections
+                                const newValue = Array.from(
+                                  new Set([...field.value, ...allFilteredIds]),
+                                );
+                                field.onChange(newValue);
+                              } else {
+                                // Remove filtered amenity IDs from the current selection
+                                const newValue = field.value.filter(
+                                  (id) => !allFilteredIds.includes(id),
+                                );
+                                field.onChange(newValue);
+                              }
+                            }}
+                            className="h-5 w-5 rounded border-0 border-cstm-primary transition transition-all data-[state=checked]:bg-white data-[state=unchecked]:bg-white data-[state=checked]:text-cstm-primary"
+                          />
+                          <p className="ml-2 text-white">
+                            Select All Amenities
+                          </p>
                         </div>
 
                         <div className="flex max-h-[500px] flex-col gap-4 overflow-y-auto p-4 pt-0">
@@ -943,7 +961,11 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                             filteredAmenities?.map((amenity: any) => (
                               <div
                                 key={amenity.Id}
-                                className={`flex items-center gap-4 rounded p-3 ${field.value.includes(amenity.Id) ? "bg-cstm-primary text-white" : "bg-white/[.85] text-black"} transition transition-all`}
+                                className={`flex items-center gap-4 rounded p-3 ${
+                                  field.value.includes(amenity.Id)
+                                    ? "bg-cstm-primary text-white"
+                                    : "bg-white/[.85] text-black"
+                                } transition transition-all`}
                               >
                                 <Checkbox
                                   checked={field.value.includes(amenity.Id)}
@@ -955,19 +977,26 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                                           (id) => id !== amenity.Id,
                                         )
                                       : [...field.value, amenity.Id];
-
                                     field.onChange(newValue);
                                   }}
                                   className="h-5 w-5 rounded border-0 border-cstm-primary transition transition-all data-[state=checked]:bg-white data-[state=unchecked]:bg-cstm-secondary data-[state=checked]:text-cstm-primary"
                                 />
                                 <div className="flex flex-col">
                                   <p
-                                    className={`${field.value.includes(amenity.Id) ? "text-white" : "text-black"} font-semibold transition transition-all`}
+                                    className={`${
+                                      field.value.includes(amenity.Id)
+                                        ? "text-white"
+                                        : "text-black"
+                                    } font-semibold transition transition-all`}
                                   >
                                     {amenity.Label}
                                   </p>
                                   <p
-                                    className={`${field.value.includes(amenity.Id) ? "text-white/[.70]" : "text-black/[.70]"} text-sm transition transition-all`}
+                                    className={`${
+                                      field.value.includes(amenity.Id)
+                                        ? "text-white/[.70]"
+                                        : "text-black/[.70]"
+                                    } text-sm transition transition-all`}
                                   >
                                     {amenity.Description}
                                   </p>
@@ -976,11 +1005,11 @@ export default function RoomTypeForm({ id }: { id?: string | undefined }) {
                             ))
                           )}
                         </div>
-                        <FormMessage></FormMessage>
+                        <FormMessage />
                       </FormItem>
                     );
                   }}
-                ></FormField>
+                />
               </Card>
             </div>
           </div>

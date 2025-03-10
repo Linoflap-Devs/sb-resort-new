@@ -65,11 +65,11 @@
     "salesThisMonth": "This Month's Sales",
     "monthlySales": "Monthly Sales",
     "monthlyReservations": " Monthly Reservations",
-    "forCheckIn": "Check In",
-    "forCheckOut": " Check Out",
+    "forCheckIn": "Check-in",
+    "forCheckOut": " Check-out",
     "roomNumber": "Room Number",
-    "checkInTime": "Check In Time",
-    "checkOutTime": "Check Out Time"
+    "checkInTime": "Check-in Date and Time",
+    "checkOutTime": "Check-out Date and Time"
   },
   "BookingPage": {},
   "RoomsPage": {

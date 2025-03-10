@@ -51,6 +51,10 @@ export default function Header({
           name: "Room Rates",
           url: "/rooms/roomrates",
         },
+        {
+          name: "Bed Types",
+          url: "/rooms/bedtype",
+        },
       ],
     },
     {

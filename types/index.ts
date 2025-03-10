@@ -65,6 +65,11 @@ export interface RoomRate {
     "CreatedAt": Date
 }
 
+export interface BedType{
+    Id: number;
+    Type: string;
+}
+
 export interface RoomAmenityResponse {
     RoomTypeId: number,
     Amenities: RoomAmenity[]

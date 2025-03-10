@@ -11,6 +11,7 @@ import Heading from "@tiptap/extension-heading";
 import OList from "@tiptap/extension-ordered-list";
 import ListItem from "@tiptap/extension-list-item";
 import Placeholder from "@tiptap/extension-placeholder";
+import Underline from "@tiptap/extension-underline";
 import { useEffect } from "react";
 
 const Tiptap = ({ value, onChange, placeholder }: any) => {
@@ -18,6 +19,7 @@ const Tiptap = ({ value, onChange, placeholder }: any) => {
     {
       extensions: [
         StarterKit.configure({}),
+        Underline,
         Heading.configure({
           HTMLAttributes: {
             class: "text-2xl font-bold h-min",
@@ -31,8 +33,8 @@ const Tiptap = ({ value, onChange, placeholder }: any) => {
         }),
         Placeholder.configure({
           placeholder: placeholder,
-          emptyEditorClass: "is-editor-empty"
-        })
+          emptyEditorClass: "is-editor-empty",
+        }),
       ],
 
       content: value,
@@ -44,7 +46,7 @@ const Tiptap = ({ value, onChange, placeholder }: any) => {
       },
       onUpdate: ({ editor }) => {
         const html = editor.getHTML();
-        if(html !== value){
+        if (html !== value) {
           onChange(editor.getHTML());
         }
         console.log(editor.getHTML());
@@ -58,7 +60,6 @@ const Tiptap = ({ value, onChange, placeholder }: any) => {
       editor.commands.setContent(value);
     }
   }, [value, editor]);
-
 
   return (
     <div className="flex flex-col gap-2">
