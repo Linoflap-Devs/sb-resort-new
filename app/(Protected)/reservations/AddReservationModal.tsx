@@ -91,7 +91,10 @@ export default function AddReservationModal() {
     setAppliedDiscount,
     appliedPromo,
     setAppliedPromo,
+    reservationTypeOptionsQuery,
   } = useGlobalStore();
+  const { data: reservationTypeOptions, isLoading: reservationTypeLoading } =
+    reservationTypeOptionsQuery();
   const [childCapacity, setChildCapacity] = useState(0);
   const [adultCapacity, setAdultCapacity] = useState(0);
   const [extraChild, setExtraChild] = useState(0);
@@ -120,6 +123,9 @@ export default function AddReservationModal() {
         message: "Check-In date must be before Check-Out date",
       }),
     roomType: z.string().min(1, { message: "Please select a room type." }),
+    reservationType: z
+      .string()
+      .min(1, { message: "Please select a reservation method." }),
     adultGuests: z.coerce
       .number()
       .min(1, { message: "Adults must be at least 1." }),
@@ -154,8 +160,9 @@ export default function AddReservationModal() {
     defaultValues: {
       dateRange: { from: new Date(), to: addDays(new Date(), 1) },
       roomType: undefined,
-      adultGuests: 0,
-      childGuests: 0,
+      reservationType: undefined,
+      adultGuests: undefined,
+      childGuests: undefined,
       extraAdult: 0,
       extraChild: 0,
       request: "",
@@ -489,6 +496,12 @@ export default function AddReservationModal() {
   const addMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       setSubmissionLoading(true);
+      const roomTypeId = roomTypeData?.find(
+        (room: any) =>
+          room.TypeName.toLowerCase() ===
+          form.getValues("roomType")?.toString().toLowerCase(),
+      )?.Id;
+
       const res = await addOnlineReservation(
         capitalizeFirstLetter(values.firstName),
         capitalizeFirstLetter(values.lastName),
@@ -497,15 +510,11 @@ export default function AddReservationModal() {
         values.phoneNumber,
         "",
         1,
-        roomTypeData?.find(
-          (room: any) =>
-            room.TypeName.toLowerCase() ==
-            form.getValues("roomType")?.toString().toLowerCase(),
-        )?.Id,
+        roomTypeId,
         new Date(convertToLocalUTCTime(values.dateRange.from)),
         new Date(convertToLocalUTCTime(values.dateRange.to)),
-        values.extraAdult,
         values.extraChild,
+        values.extraAdult,
         roomRate.Id,
         1,
         values.country,
@@ -518,8 +527,9 @@ export default function AddReservationModal() {
         values.zipCode,
         values.adultGuests,
         values.childGuests,
-        2,
+        Number(values.reservationType),
       );
+
       if (!res.success) throw new Error(res.res);
       return res.res;
     },
@@ -594,7 +604,9 @@ export default function AddReservationModal() {
                   name="dateRange"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Check In/Out Dates</FormLabel>
+                      <FormLabel className="font-bold">
+                        Check In/Out Dates
+                      </FormLabel>
                       <FormControl className=" ">
                         <Popover>
                           <PopoverTrigger asChild>
@@ -653,7 +665,7 @@ export default function AddReservationModal() {
                     <div className="flex flex-col border-b pb-4">
                       <p className="text-lg font-bold">Room Details</p>
                       <div className="flex gap-4">
-                        <div className="w-full">
+                        <div className="w-1/2">
                           <FormField
                             name="roomType"
                             render={({ field }) => (
@@ -739,6 +751,36 @@ export default function AddReservationModal() {
                                   )}
                                 </FormDescription>
                                 <FormMessage></FormMessage>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <div className="w-1/2">
+                          {/* New Reservation Method dropdown */}
+                          <FormField
+                            name="reservationType"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Reservation Method</FormLabel>
+                                <FormControl>
+                                  <SelectComponent
+                                    className="w-full"
+                                    setState={field.onChange}
+                                    state={field.value}
+                                    disabled={reservationTypeLoading}
+                                    options={
+                                      reservationTypeOptions?.map(
+                                        (option: any) => ({
+                                          value: option.value.toString(),
+                                          label: option.label,
+                                        }),
+                                      ) || []
+                                    }
+                                    placeholder={"Select reservation method..."}
+                                  />
+                                </FormControl>
+                                <FormDescription></FormDescription>
+                                <FormMessage />
                               </FormItem>
                             )}
                           />
@@ -1311,7 +1353,7 @@ export default function AddReservationModal() {
                         className="animate-spin"
                       />
                     ) : (
-                      "Submit"
+                      "Add Reservation"
                     )}
                   </Button>
                 </div>

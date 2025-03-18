@@ -94,6 +94,7 @@ export async function getReservation(id: string) {
   console.log(data)
   return { success: true, res: data };
 }
+
 export async function addReservationsLobby(values: any) {
   console.log(values)
   const {
@@ -461,4 +462,14 @@ export async function updateCheckOutTime(reservationId: number, time: Date){
     return {success: false, res: []}
   }
   return {success: true, res: data}
+}
+export async function getReservationTypeOptions() {
+  const { data, error } = await supabase
+    .from("ReservationType")
+    .select("label:TypeName, value:Id");
+  if (error) {
+    console.log(error);
+    return { success: false, res: data, error: error.message };
+  }
+  return { success: true, res: data };
 }

@@ -4,7 +4,12 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { useGlobalStore } from "@/store/useGlobalStore";
 import SelectComponent from "@/components/SelectComponent";
-export default function PromosController() {
+
+type PromosControllerProps = {
+  role: number;
+};
+
+export default function PromosController({ role }: PromosControllerProps) {
   const {
     setSelectedPromoData,
     setPromosFormModalState,
@@ -13,7 +18,9 @@ export default function PromosController() {
     setSelectedRoomTypePromosFilter,
     resetSelectOptState,
   } = useGlobalStore();
+
   const { data: RoomTypeOption } = roomTypeOptionsQuery();
+
   return (
     <div className="flex w-full flex-row items-center justify-between gap-2 border-b border-cstm-border px-4 py-3">
       <div className="flex w-full items-center gap-4">
@@ -31,16 +38,18 @@ export default function PromosController() {
         </Button>
       </div>
       <div>
-        <Button
-          className="flex items-center gap-2 bg-cstm-primary text-cstm-tertiary"
-          onClick={() => {
-            setSelectedPromoData({});
-            setPromosFormModalState(true);
-          }}
-        >
-          <Plus />
-          Add Promo Rate
-        </Button>
+        {role !== 1 && (
+          <Button
+            className="flex items-center gap-2 bg-cstm-primary text-cstm-tertiary"
+            onClick={() => {
+              setSelectedPromoData({});
+              setPromosFormModalState(true);
+            }}
+          >
+            <Plus />
+            Add Promo Rate
+          </Button>
+        )}
       </div>
     </div>
   );

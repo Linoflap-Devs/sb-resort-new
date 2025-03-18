@@ -152,7 +152,7 @@ export default function FinalizeBillingForm() {
                   </div>
                   <div className="mt-4 flex">
                     <div className="w-1/2">
-                      <p className="font-bold text-black/[.70]">Check-In</p>
+                      <p className="font-bold text-black/[.70]">Check-in</p>
                       <p className="text-black/[.65]">
                         {format(
                           new Date(
@@ -163,7 +163,7 @@ export default function FinalizeBillingForm() {
                       </p>
                     </div>
                     <div className="w-1/2">
-                      <p className="font-bold text-black/[.70]">Check-Out</p>
+                      <p className="font-bold text-black/[.70]">Check-out</p>
                       <p className="text-black/[.65]">
                         {format(
                           new Date(
@@ -186,7 +186,7 @@ export default function FinalizeBillingForm() {
                   </div>
                   {
                     <div className="mt-4 flex flex-col">
-                      <p className="font-bold text-black/[.70]">Add-Ons</p>
+                      <p className="font-bold text-black/[.70]">Add-ons</p>
                       {!(
                         selectedBillingData.AddOns == undefined ||
                         selectedBillingData.AddOns.length == 0

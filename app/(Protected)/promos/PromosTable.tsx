@@ -16,16 +16,18 @@ import { Ellipsis } from "lucide-react";
 import { useTranslation } from "next-export-i18n";
 import { useState } from "react";
 import { CalendarIcon } from "lucide-react";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { access } from "fs";
 
-export default function PromosTable() {
+type PromosTableProps = {
+  role: number;
+};
+
+export default function PromosTable({ role }: PromosTableProps) {
   const { t } = useTranslation();
   const generalI18n = t("general");
   const {
@@ -39,7 +41,7 @@ export default function PromosTable() {
   let selectedPromoId = 0;
   const { data, isLoading } = promosQuery();
 
-  const columns = [
+  const baseColumns = [
     {
       accessorKey: "Id",
       header: "Promo ID",
@@ -61,7 +63,6 @@ export default function PromosTable() {
       header: "Rates",
       cell: ({ row }: any) => {
         const record = row.original;
-        console.log(record);
         return (
           <HoverCard>
             <HoverCardTrigger asChild>
@@ -116,10 +117,13 @@ export default function PromosTable() {
     },
     {
       accessorKey: "ExpiredAt",
-      header:"Expired At",
+      header: "Expired At",
       cell: ({ row, cell }: any) => {
         const date = new Date(cell.getValue() || 0);
-      if(date < new Date()) return <span className="text-red-500">{format(date, "MMM yyyy")}</span>;
+        if (date < new Date())
+          return (
+            <span className="text-red-500">{format(date, "MMM yyyy")}</span>
+          );
         return format(date, "MMM yyyy");
       },
     },
@@ -131,47 +135,49 @@ export default function PromosTable() {
         return format(date, "MMM yyyy");
       },
     },
-    {
-      id: "actions",
-      enableHiding: false,
-      cell: ({ row }: any) => {
-        const record = row.original;
-        //const isPending = row.getValue("ReservationStatus") === "Pending";
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <Ellipsis className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>{generalI18n.actions}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => {
-                  setPromosFormModalState(true);
-                  setSelectedPromoData(record);
-                }}
-              >
-                {generalI18n.edit}
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
-                onClick={() => {
-                  selectedPromoId = record.Id;
-                  setOpenDelete(true);
-                }}
-                className="font-medium text-red-500"
-              >
-                {generalI18n.delete}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      },
-    },
   ];
+
+  const actionsColumn = {
+    id: "actions",
+    enableHiding: false,
+    cell: ({ row }: any) => {
+      const record = row.original;
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <Ellipsis className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>{generalI18n.actions}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
+                setPromosFormModalState(true);
+                setSelectedPromoData(record);
+              }}
+            >
+              {generalI18n.edit}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                selectedPromoId = record.Id;
+                setOpenDelete(true);
+              }}
+              className="font-medium text-red-500"
+            >
+              {generalI18n.delete}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  };
+
+  // Only add the actions column if role is not equal to 1
+  const columns = [...baseColumns, ...(role !== 1 ? [actionsColumn] : [])];
 
   return (
     <div className="p-4">
@@ -187,7 +193,14 @@ export default function PromosTable() {
         data={data}
         pageSize={7}
         searchPlaceholder="Search Promo Name"
-        columnToSearch={["Id", "PromoName", "PromoCode", "RoomType", "CreatedAt", "ExpiredAt"]}
+        columnToSearch={[
+          "Id",
+          "PromoName",
+          "PromoCode",
+          "RoomType",
+          "CreatedAt",
+          "ExpiredAt",
+        ]}
         filterByCol={[
           {
             column: "RoomTypeId",

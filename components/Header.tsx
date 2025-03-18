@@ -62,12 +62,16 @@ export default function Header({
       url: "/reservations",
       subNav: [
         {
-          name: "Billing",
+          name: "Billings",
           url: "/reservations/billing",
         },
         {
           name: "Reservations Details",
           url: "/reservations/details",
+        },
+        {
+          name: "Add-ons",
+          url: "/reservations/addOns",
         },
       ],
     },
@@ -93,7 +97,6 @@ export default function Header({
         },
       ],
     },
-
     {
       name: "Management",
       url: "/management",
@@ -108,7 +111,6 @@ export default function Header({
         },
       ],
     },
-
     {
       name: "Promos",
       url: "/promos",
@@ -122,15 +124,19 @@ export default function Header({
       url: "/settings",
     },
   ];
-  // Filter navigation items that match the current path
+
+  // Flatten the navigation items and filter by matching the currentPath
   const matchingItems = navigationItems
-    .flatMap((item) => {
-      if (item.subNav) {
-        return [item, ...item.subNav];
-      }
-      return item;
-    })
+    .flatMap((item) => (item.subNav ? [item, ...item.subNav] : item))
     .filter((item) => currentPath.includes(item.url));
+
+  // If the current path indicates a details page, append the "View Details" breadcrumb.
+  if (currentPath.includes("/guests/details/")) {
+    matchingItems.push({
+      name: "Details",
+      url: currentPath,
+    });
+  }
 
   return (
     <div className="h-1/12 w-full bg-cstm-secondary">

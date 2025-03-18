@@ -14,8 +14,8 @@ export default function AddOnController() {
     setAddOnModalState,
     addOnTypeQuery,
     setSelectedAddOnData,
- 
-    resetSelectOptState
+
+    resetSelectOptState,
   } = useGlobalStore();
 
   const { data } = addOnTypeQuery();
@@ -37,7 +37,7 @@ export default function AddOnController() {
       <div className="flex gap-2">
         <Button
           onClick={() => {
-            setSelectedAddOnData({})
+            setSelectedAddOnData({});
             setAddOnModalState(true);
           }}
         >

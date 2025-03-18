@@ -21,10 +21,10 @@ export default function ReservationController() {
     setReservationFilterStatusOpt,
     resetSelectOptState,
     addReservationModalState,
-    setAddReservationModalState
+    setAddReservationModalState,
   } = useGlobalStore();
   const { data: RoomTypeOption } = roomTypeOptionsQuery();
-  console.log("RoomTypeOption:",RoomTypeOption)
+  console.log("RoomTypeOption:", RoomTypeOption);
   const { data } = useQuery({
     queryKey: ["GetReservationStatusOpt"],
     queryFn: async () =>
@@ -43,6 +43,7 @@ export default function ReservationController() {
           valueType="label"
         />
         <SelectComponent
+          className="w-74"
           state={reservationFilterStatusOpt}
           setState={setReservationFilterStatusOpt}
           options={data || []}
@@ -58,7 +59,7 @@ export default function ReservationController() {
       </div>
       <Button
         onClick={() => {
-          setAddReservationModalState(true)
+          setAddReservationModalState(true);
         }}
       >
         <Plus size={20} />

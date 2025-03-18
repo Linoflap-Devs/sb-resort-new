@@ -14,7 +14,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { create } from "zustand";
 import { enUS, ja, Locale } from "date-fns/locale";
-import { checkReservation, getAddOns, getAddOnsTypeOpt, getBillings, getReservations, getReservationSummary, updateCheckInTime, updateCheckOutTime } from "@/app/ServerAction/reservations.action";
+import { checkReservation, getAddOns, getAddOnsTypeOpt, getBillings, getReservations, getReservationSummary, getReservationTypeOptions, updateCheckInTime, updateCheckOutTime } from "@/app/ServerAction/reservations.action";
 import { getGuests, getUsers } from "@/app/ServerAction/manage.action";
 import { getPromos } from "@/app/ServerAction/promos.action";
 import { getDeviceReservation } from "@/app/ServerAction/reports.action";
@@ -178,6 +178,9 @@ export const useGlobalStore = create<GlobalState>()((set) => ({
   appliedDiscount: {} as any,
   setAppliedDiscount: (data: any) => set((state) => ({ ...state, appliedDiscount: data })),
 
+  currentUser: null,
+  setCurrentUser: (user) => set(() => ({ currentUser: user })),
+
   roomTypesQuery: () => {
     return useQuery({
       queryKey: ["GetRoomTypes"],
@@ -198,6 +201,12 @@ export const useGlobalStore = create<GlobalState>()((set) => ({
     return useQuery<MainOptions[]>({
       queryKey: ["GetRoomTypeOptions"],
       queryFn: async () => (await getRoomTypeOptions()).res as MainOptions[],
+    });
+  },
+  reservationTypeOptionsQuery: () => {
+    return useQuery<MainOptions[]>({
+      queryKey: ["GetReservationTypeOptions"],
+      queryFn: async () => (await getReservationTypeOptions()).res as MainOptions[],
     });
   },
   roomStatusOptionsQuery: () => {
@@ -242,6 +251,7 @@ export const useGlobalStore = create<GlobalState>()((set) => ({
       queryFn: async () => (await getReservations()).res as Reservation[],
     });
   },
+
   billingsQuery: () => {
     return useQuery({
       queryKey: ["GetBillings"],
@@ -389,6 +399,8 @@ export const useGlobalStore = create<GlobalState>()((set) => ({
     })
   }
 
+  
+
   // updateDiscountStatusQuery: (id: number, state: boolean) => {
   //   return useQuery({
   //     queryKey: ["UpdateDiscountStatus"],
@@ -499,6 +511,7 @@ interface GlobalState {
   /* Room */
   usersQuery: () => any;
   roomTypeOptionsQuery: () => any;
+  reservationTypeOptionsQuery: () => any;
   roomStatusOptionsQuery: () => any;
   bedTypeOptionsQuery: () => any;
   roomsQuery: () => any;
@@ -578,6 +591,10 @@ interface GlobalState {
   setSelectedDiscountRoomType: (data: any) => void;
   appliedDiscount: { id: number, name: string, code: string, type: string, value: number }
   setAppliedDiscount: (discount: { id: number, name: string, code: string, type: string, value: number }) => void
+
+
+  currentUser: { role: number } | null;
+  setCurrentUser: (user: { role: number } | null) => void;
 }
 
 

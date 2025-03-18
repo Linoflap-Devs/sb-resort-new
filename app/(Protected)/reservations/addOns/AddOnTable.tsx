@@ -12,7 +12,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ChevronDownIcon, ChevronsUpDownIcon, ChevronUpIcon, Ellipsis } from "lucide-react";
+import {
+  ChevronDownIcon,
+  ChevronsUpDownIcon,
+  ChevronUpIcon,
+  Ellipsis,
+} from "lucide-react";
 import { useTranslation } from "next-export-i18n";
 import { useGlobalStore } from "@/store/useGlobalStore";
 import { m } from "framer-motion";
@@ -54,87 +59,105 @@ export default function AddOnTable() {
   const column = [
     {
       accessorKey: "Id",
-      header: ({column}: any) => {
+      header: ({ column }: any) => {
         return (
           <div className="flex">
-            <Button 
-              className="p-0 bg-transparent font-semibold flex gap-1"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            >
-              {"Id"} {
-                column.getIsSorted() === 'asc' ? 
-                <ChevronUpIcon size={12} /> : 
-                column.getIsSorted() === 'desc' ? <ChevronDownIcon size={12} /> : 
-                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+            <Button
+              className="flex gap-1 bg-transparent p-0 font-semibold"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
               }
+            >
+              {"Id"}{" "}
+              {column.getIsSorted() === "asc" ? (
+                <ChevronUpIcon size={12} />
+              ) : column.getIsSorted() === "desc" ? (
+                <ChevronDownIcon size={12} />
+              ) : (
+                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+              )}
             </Button>
           </div>
-        )
+        );
       },
       enableHiding: false,
     },
     {
       accessorKey: "AddOnName",
-      header: ({column}: any) => {
+      header: ({ column }: any) => {
         return (
           <div className="flex">
-            <Button 
-              className="p-0 bg-transparent font-semibold flex gap-1"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            >
-              {"Name"} {
-                column.getIsSorted() === 'asc' ? 
-                <ChevronUpIcon size={12} /> : 
-                column.getIsSorted() === 'desc' ? <ChevronDownIcon size={12} /> : 
-                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+            <Button
+              className="flex gap-1 bg-transparent p-0 font-semibold"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
               }
+            >
+              {"Name"}{" "}
+              {column.getIsSorted() === "asc" ? (
+                <ChevronUpIcon size={12} />
+              ) : column.getIsSorted() === "desc" ? (
+                <ChevronDownIcon size={12} />
+              ) : (
+                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+              )}
             </Button>
           </div>
-        )
+        );
       },
     },
     {
       accessorKey: "AddOnType",
-      header: ({column}: any) => {
+      header: ({ column }: any) => {
         return (
           <div className="flex">
-            <Button 
-              className="p-0 bg-transparent font-semibold flex gap-1"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            >
-              {"Type"} {
-                column.getIsSorted() === 'asc' ? 
-                <ChevronUpIcon size={12} /> : 
-                column.getIsSorted() === 'desc' ? <ChevronDownIcon size={12} /> : 
-                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+            <Button
+              className="flex gap-1 bg-transparent p-0 font-semibold"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
               }
+            >
+              {"Type"}{" "}
+              {column.getIsSorted() === "asc" ? (
+                <ChevronUpIcon size={12} />
+              ) : column.getIsSorted() === "desc" ? (
+                <ChevronDownIcon size={12} />
+              ) : (
+                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+              )}
             </Button>
           </div>
-        )
+        );
       },
     },
     {
       accessorKey: "Price",
-      header: ({column}: any) => {
+      header: ({ column }: any) => {
         return (
           <div className="flex justify-end">
-            <Button 
-              className="p-0 bg-transparent font-semibold flex gap-1"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            >
-              {"Price"} {
-                column.getIsSorted() === 'asc' ? 
-                <ChevronUpIcon size={12} /> : 
-                column.getIsSorted() === 'desc' ? <ChevronDownIcon size={12} /> : 
-                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+            <Button
+              className="flex gap-1 bg-transparent p-0 font-semibold"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
               }
+            >
+              {"Price"}{" "}
+              {column.getIsSorted() === "asc" ? (
+                <ChevronUpIcon size={12} />
+              ) : column.getIsSorted() === "desc" ? (
+                <ChevronDownIcon size={12} />
+              ) : (
+                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+              )}
             </Button>
           </div>
-        )
+        );
       },
-      cell: (({cell}:any) => {
-          return <p className="text-right"> ₱ {formatCurrencyJP(cell.getValue())}</p>
-      })
+      cell: ({ cell }: any) => {
+        return (
+          <p className="text-right"> ₱ {formatCurrencyJP(cell.getValue())}</p>
+        );
+      },
     },
     {
       accessorKey: "AddOnTypeId",
@@ -190,9 +213,9 @@ export default function AddOnTable() {
         visibility={{ AddOnTypeId: false }}
         title="Add-ons"
         columns={column}
+        pageSize={10}
         columnToSearch={["AddOnName", "AddOnType"]}
         searchPlaceholder="Search Add-ons"
-        
         filterByCol={[
           {
             column: "AddOnType",

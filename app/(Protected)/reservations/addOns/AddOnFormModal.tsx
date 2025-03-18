@@ -112,7 +112,7 @@ export default function AddOnFormModal() {
         <DialogHeader>
           <DialogTitle>{isEditMode ? "Edit Add-on" : "Add Add-on"}</DialogTitle>
           <DialogDescription className="text-md">
-            {isEditMode 
+            {isEditMode
               ? "Please complete the form to edit an add-on"
               : "Please complete the form to add an add-on."}
           </DialogDescription>
@@ -148,12 +148,12 @@ export default function AddOnFormModal() {
                 name="AddOnTypeId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Add-On Type</FormLabel>
+                    <FormLabel>Add-on Type</FormLabel>
                     <SelectComponent
                       className="w-full"
                       state={field.value}
                       setState={field.onChange}
-                      placeholder="Select Add On Type"
+                      placeholder="Select Add-on Type"
                       options={data}
                     />
                     <FormMessage />
@@ -161,10 +161,8 @@ export default function AddOnFormModal() {
                 )}
               />
               <DialogFooter>
-                <Button className="bg-cstm-secondary" type="submit">
-                {isEditMode 
-              ? "Update"
-              : "Submit"}
+                <Button className="mt-3 bg-cstm-secondary" type="submit">
+                  {isEditMode ? "Update" : "Add Add-on"}
                 </Button>
               </DialogFooter>
             </form>

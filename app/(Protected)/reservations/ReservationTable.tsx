@@ -13,7 +13,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AlbumIcon, ChevronDownIcon, ChevronsUpDownIcon, ChevronUpIcon, DoorClosedIcon, DoorOpenIcon, Ellipsis, Loader2 } from "lucide-react";
+import {
+  AlbumIcon,
+  ChevronDownIcon,
+  ChevronsUpDownIcon,
+  ChevronUpIcon,
+  DoorClosedIcon,
+  DoorOpenIcon,
+  Ellipsis,
+  Loader2,
+} from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { deleteReservation } from "@/app/ServerAction/reservations.action";
 import { useTranslation } from "next-export-i18n";
@@ -31,7 +40,7 @@ export default function ReservationTable() {
   const roomsI18n = t("RoomsPage");
   const generali18n = t("general");
   const reservationI18n = t("ReservationsPage");
-  const guesti18n= t("GuestPage");
+  const guesti18n = t("GuestPage");
   const locale = t("locale");
 
   const {
@@ -49,17 +58,20 @@ export default function ReservationTable() {
   const [deleteId, setDeleteId] = useState(0);
 
   useEffect(() => {
-    console.log(reservations)
-    console.log(new Date().getDate().toLocaleString('ph-PH'))
-    if(reservations) {
-      console.log(reservations?.filter((reservation: any) => 
-        format(new Date(reservation.CreatedAt), "MM-dd-yyyy") == format(new Date(), "MM-dd-yyyy")
-        )
-      )
-      console.log(format(new Date(), "MM-dd-yyyy"))
-      console.log(format(new Date(reservations[0]?.CreatedAt), "MM-dd-yyyy"))
+    console.log(reservations);
+    console.log(new Date().getDate().toLocaleString("ph-PH"));
+    if (reservations) {
+      console.log(
+        reservations?.filter(
+          (reservation: any) =>
+            format(new Date(reservation.CreatedAt), "MM-dd-yyyy") ==
+            format(new Date(), "MM-dd-yyyy"),
+        ),
+      );
+      console.log(format(new Date(), "MM-dd-yyyy"));
+      console.log(format(new Date(reservations[0]?.CreatedAt), "MM-dd-yyyy"));
     }
-  }, [isLoading])
+  }, [isLoading]);
 
   const mutation = useMutation({
     mutationKey: ["DeleteReservation"],
@@ -85,22 +97,26 @@ export default function ReservationTable() {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: "Id",
-      header: ({column}: any) => {
+      header: ({ column }: any) => {
         return (
           <div className="flex">
-            <Button 
-              className="p-0 bg-transparent font-semibold flex gap-1"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            >
-              {reservationI18n.reservationId} {
-                column.getIsSorted() === 'asc' ? 
-                <ChevronUpIcon size={12} /> : 
-                column.getIsSorted() === 'desc' ? <ChevronDownIcon size={12} /> : 
-                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+            <Button
+              className="flex gap-1 bg-transparent p-0 font-semibold"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
               }
+            >
+              {reservationI18n.reservationId}{" "}
+              {column.getIsSorted() === "asc" ? (
+                <ChevronUpIcon size={12} />
+              ) : column.getIsSorted() === "desc" ? (
+                <ChevronDownIcon size={12} />
+              ) : (
+                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+              )}
             </Button>
           </div>
-        )
+        );
       },
       cell: ({ cell }: any) => {
         return <div className="">{cell.getValue()}</div>;
@@ -125,13 +141,12 @@ export default function ReservationTable() {
         const cellData = cell.getValue();
         return (
           <div className="">
-            { cellData
+            {cellData
               ? `${cellData.FirstName} 
                     ${cellData.LastName} `
-              : "N/A"
-            }
+              : "N/A"}
           </div>
-        )
+        );
       },
     },
     // {
@@ -185,79 +200,99 @@ export default function ReservationTable() {
     {
       id: "CreatedAt",
       accessorKey: "CreatedAt",
-      header: ({column}: any) => {
+      header: ({ column }: any) => {
         return (
           <div className="flex">
-            <Button 
-              className="p-0 bg-transparent font-semibold flex gap-1"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            >
-              Booking Date {
-                column.getIsSorted() === 'asc' ? 
-                <ChevronUpIcon size={12} /> : 
-                column.getIsSorted() === 'desc' ? <ChevronDownIcon size={12} /> : 
-                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+            <Button
+              className="flex gap-1 bg-transparent p-0 font-semibold"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
               }
-            </Button>      
+            >
+              Booking Date{" "}
+              {column.getIsSorted() === "asc" ? (
+                <ChevronUpIcon size={12} />
+              ) : column.getIsSorted() === "desc" ? (
+                <ChevronDownIcon size={12} />
+              ) : (
+                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+              )}
+            </Button>
           </div>
-        )
+        );
       },
       cell: ({ cell }: any) => {
         return (
-          <div className="">{format(new Date(cell.getValue()), "MMM dd, yyyy")}</div>
-        )
+          <div className="">
+            {format(new Date(cell.getValue()), "MMM dd, yyyy")}
+          </div>
+        );
       },
       sortingFn: "datetime",
     },
     {
       id: "checkInDate",
       accessorKey: "CheckInDate",
-      header: ({column}: any) => {
+      header: ({ column }: any) => {
         return (
           <div className="flex">
-            <Button 
-              className="p-0 bg-transparent font-semibold flex gap-1"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            >
-              {reservationI18n.checkInDate} {
-                column.getIsSorted() === 'asc' ? 
-                <ChevronUpIcon size={12} /> : 
-                column.getIsSorted() === 'desc' ? <ChevronDownIcon size={12} /> : 
-                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+            <Button
+              className="flex gap-1 bg-transparent p-0 font-semibold"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
               }
-            </Button>      
+            >
+              {reservationI18n.checkInDate}{" "}
+              {column.getIsSorted() === "asc" ? (
+                <ChevronUpIcon size={12} />
+              ) : column.getIsSorted() === "desc" ? (
+                <ChevronDownIcon size={12} />
+              ) : (
+                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+              )}
+            </Button>
           </div>
-        )
+        );
       },
       cell: ({ cell }: any) => {
         return (
-          <div className="">{format(new Date(cell.getValue()), "MMM dd, yyyy")}</div>
-        )
+          <div className="">
+            {format(new Date(cell.getValue()), "MMM dd, yyyy")}
+          </div>
+        );
       },
       sortingFn: "datetime",
     },
     {
       id: "checkOutDate",
       accessorKey: "CheckOutDate",
-      header: ({column}: any) => {
+      header: ({ column }: any) => {
         return (
-          <div className="flex ">
-            <Button 
-              className="p-0 bg-transparent font-semibold flex gap-1"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            >
-              {reservationI18n.checkOutDate} {
-                column.getIsSorted() === 'asc' ? 
-                <ChevronUpIcon size={12} /> : 
-                column.getIsSorted() === 'desc' ? <ChevronDownIcon size={12} /> : 
-                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+          <div className="flex">
+            <Button
+              className="flex gap-1 bg-transparent p-0 font-semibold"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
               }
-            </Button>      
+            >
+              {reservationI18n.checkOutDate}{" "}
+              {column.getIsSorted() === "asc" ? (
+                <ChevronUpIcon size={12} />
+              ) : column.getIsSorted() === "desc" ? (
+                <ChevronDownIcon size={12} />
+              ) : (
+                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+              )}
+            </Button>
           </div>
-        )
+        );
       },
       cell: ({ cell }: any) => {
-        return <div className="">{format(new Date(cell.getValue()), "MMM dd, yyyy")}</div>
+        return (
+          <div className="">
+            {format(new Date(cell.getValue()), "MMM dd, yyyy")}
+          </div>
+        );
       },
       sortingFn: "datetime",
     },
@@ -303,47 +338,55 @@ export default function ReservationTable() {
     // },
     {
       accessorKey: "RoomType",
-      header: ({column}: any) => {
+      header: ({ column }: any) => {
         return (
-          <div className="flex ">
-            <Button 
-              className="p-0 bg-transparent font-semibold flex gap-1"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            >
-              {roomsI18n.roomType} {
-                column.getIsSorted() === 'asc' ? 
-                <ChevronUpIcon size={12} /> : 
-                column.getIsSorted() === 'desc' ? <ChevronDownIcon size={12} /> : 
-                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+          <div className="flex">
+            <Button
+              className="flex gap-1 bg-transparent p-0 font-semibold"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
               }
-            </Button>      
+            >
+              {roomsI18n.roomType}{" "}
+              {column.getIsSorted() === "asc" ? (
+                <ChevronUpIcon size={12} />
+              ) : column.getIsSorted() === "desc" ? (
+                <ChevronDownIcon size={12} />
+              ) : (
+                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+              )}
+            </Button>
           </div>
-        )
+        );
       },
     },
     {
       accessorKey: "ReservationStatus",
-      header: ({column}: any) => {
+      header: ({ column }: any) => {
         return (
-          <div className="flex ">
-            <Button 
-              className="p-0 bg-transparent font-semibold flex gap-1"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            >
-              {reservationI18n.reservationStatus} {
-                column.getIsSorted() === 'asc' ? 
-                <ChevronUpIcon size={12} /> : 
-                column.getIsSorted() === 'desc' ? <ChevronDownIcon size={12} /> : 
-                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+          <div className="flex">
+            <Button
+              className="flex gap-1 bg-transparent p-0 font-semibold"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
               }
-            </Button>      
+            >
+              {reservationI18n.reservationStatus}{" "}
+              {column.getIsSorted() === "asc" ? (
+                <ChevronUpIcon size={12} />
+              ) : column.getIsSorted() === "desc" ? (
+                <ChevronDownIcon size={12} />
+              ) : (
+                <ChevronsUpDownIcon size={12} strokeWidth={2} />
+              )}
+            </Button>
           </div>
-        )
+        );
       },
       cell: ({ cell, row }: any) => {
         const status = cell.getValue() as string;
         return (
-          <div className="flex h-min ">
+          <div className="flex h-min">
             <ReservationStatusBadge status={status} />
           </div>
         );
@@ -354,7 +397,7 @@ export default function ReservationTable() {
     //   header: ({column}: any) => {
     //     return (
     //       <div className="flex justify-center">
-    //         <Button 
+    //         <Button
     //           className="p-0 bg-transparent font-semibold"
     //           onClick={() => {
     //             column.toggleSorting(column.getIsSorted() === 'asc')
@@ -370,7 +413,7 @@ export default function ReservationTable() {
     //     return <div className="flex h-min justify-center">{reservationI18n.type[cell.getValue()]}</div>;
     //   },
     // },
-    
+
     {
       id: "actions",
       enableHiding: false,
@@ -418,7 +461,7 @@ export default function ReservationTable() {
                     Bill Out
                   </DropdownMenuItem>
                 </>
-              ) : null }
+              ) : null}
               <DropdownMenuItem
                 onClick={() => {
                   setDeleteModalState(true);
@@ -444,74 +487,100 @@ export default function ReservationTable() {
           mutation.mutate(deleteId);
         }}
       />
-      <div className="flex gap-4 mb-4">
-        <div className="flex justify-between w-1/3 bg-cstm-secondary rounded p-4">
+      <div className="mb-4 flex gap-4">
+        <div className="flex w-1/3 justify-between rounded bg-cstm-secondary p-4">
           <div className="flex flex-col gap-2">
-            <p className="text-sm text-white/[.60] font-semibold">NEW BOOKINGS</p>
-            <p className="text-3xl text-white font-bold">
-            {
-              isLoading ?
-              <Loader2 className="animate-spin" color="white" /> :
-              reservations?.filter((reservation: any) => 
-              format(new Date(reservation.CreatedAt), "MM-dd-yyyy") == format(new Date(), "MM-dd-yyyy") &&
-              reservation.ReservationStatus == "Pending"
-              ).length}
+            <p className="text-sm font-semibold text-white/[.60]">
+              NEW BOOKINGS
+            </p>
+            <p className="text-3xl font-bold text-white">
+              {isLoading ? (
+                <Loader2 className="animate-spin" color="white" />
+              ) : (
+                reservations?.filter(
+                  (reservation: any) =>
+                    format(new Date(reservation.CreatedAt), "MM-dd-yyyy") ==
+                      format(new Date(), "MM-dd-yyyy") &&
+                    reservation.ReservationStatus == "Pending",
+                ).length
+              )}
             </p>
           </div>
-          <div className="flex w-auto justify-center items-center p-2 rounded-full bg-white/[.10] text-white aspect-square">
+          <div className="flex aspect-square w-auto items-center justify-center rounded-full bg-white/[.10] p-2 text-white">
             <AlbumIcon color="currentColor" size={36} />
           </div>
-        </div> 
-        <div className="flex justify-between w-1/3 bg-cstm-secondary rounded p-4">
+        </div>
+        <div className="flex w-1/3 justify-between rounded bg-cstm-secondary p-4">
           <div className="flex flex-col gap-2">
-            <p className="text-sm text-white/[.60] font-semibold">EXPECTED CHECK-INS</p>
-            <p className="text-3xl text-white font-bold">
-            {
-              isLoading ?
-              <Loader2 className="animate-spin" color="white" /> :
-              reservations?.filter((reservation: any) => 
-              format(new Date(reservation.CheckInDate), "MM-dd-yyyy") == format(new Date(), "MM-dd-yyyy") &&
-              reservation.ReservationStatus == "Pending"
-              ).length}
+            <p className="text-sm font-semibold text-white/[.60]">
+              EXPECTED CHECK-INS
+            </p>
+            <p className="text-3xl font-bold text-white">
+              {isLoading ? (
+                <Loader2 className="animate-spin" color="white" />
+              ) : (
+                reservations?.filter(
+                  (reservation: any) =>
+                    format(new Date(reservation.CheckInDate), "MM-dd-yyyy") ==
+                      format(new Date(), "MM-dd-yyyy") &&
+                    reservation.ReservationStatus == "Pending",
+                ).length
+              )}
             </p>
           </div>
-          <div className="flex w-auto justify-center items-center p-2 rounded-full bg-white/[.10] text-white aspect-square">
+          <div className="flex aspect-square w-auto items-center justify-center rounded-full bg-white/[.10] p-2 text-white">
             <DoorClosedIcon color="currentColor" size={36} />
           </div>
-        </div> 
-        <div className="flex justify-between w-1/3 bg-cstm-secondary rounded p-4">
+        </div>
+        <div className="flex w-1/3 justify-between rounded bg-cstm-secondary p-4">
           <div className="flex flex-col gap-2">
-            <p className="text-sm text-white/[.60] font-semibold">EXPECTED CHECK-OUTS</p>
-            <p className="text-3xl text-white font-bold">
-            {
-              isLoading ?
-              <Loader2 className="animate-spin" color="white" /> :
-              reservations?.filter((reservation: any) => 
-              format(new Date(reservation.CheckOutDate), "MM-dd-yyyy") == format(new Date(), "MM-dd-yyyy") &&
-              reservation.ReservationStatus == "Checked-In"
-              ).length}
+            <p className="text-sm font-semibold text-white/[.60]">
+              EXPECTED CHECK-OUTS
+            </p>
+            <p className="text-3xl font-bold text-white">
+              {isLoading ? (
+                <Loader2 className="animate-spin" color="white" />
+              ) : (
+                reservations?.filter(
+                  (reservation: any) =>
+                    format(new Date(reservation.CheckOutDate), "MM-dd-yyyy") ==
+                      format(new Date(), "MM-dd-yyyy") &&
+                    reservation.ReservationStatus == "Checked-In",
+                ).length
+              )}
             </p>
           </div>
-          <div className="flex w-auto justify-center items-center p-2 rounded-full bg-white/[.10] text-white aspect-square">
+          <div className="flex aspect-square w-auto items-center justify-center rounded-full bg-white/[.10] p-2 text-white">
             <DoorOpenIcon color="currentColor" size={36} />
           </div>
-        </div> 
+        </div>
       </div>
       <DetailedDataTable
         title={reservationI18n.reservations}
         columns={columns}
         isLoading={isLoading}
         // data={reservations || []}
-        data={(reservations && reservations.length > 0)
-          ? reservations.filter((reservation: any) =>
-              reservationFilterRoomTypeOpt
-                ? reservation.RoomType.toLowerCase() === reservationFilterRoomTypeOpt.toLowerCase()
-                : true
-            )
-          : []}
-        
+        data={
+          reservations && reservations.length > 0
+            ? reservations.filter((reservation: any) =>
+                reservationFilterRoomTypeOpt
+                  ? reservation.RoomType.toLowerCase() ===
+                    reservationFilterRoomTypeOpt.toLowerCase()
+                  : true,
+              )
+            : []
+        }
         pageSize={10}
-        columnToSearch={["Id", "ReservationStatus", "ReservationType", "GuestFName", "GuestLName", "CheckInDate", "CheckOutDate", "RoomType"]}
+        columnToSearch={[
+          "Id",
+          "ReservationStatus",
+          "ReservationType",
+          "GuestFName",
+          "GuestLName",
+          "CheckInDate",
+          "CheckOutDate",
+          "RoomType",
+        ]}
         searchPlaceholder={reservationI18n.searchReservation}
         filterByCol={[
           {
@@ -523,7 +592,7 @@ export default function ReservationTable() {
           firstName: false,
           lastName: false,
           checkInDate: true,
-          checkOutDate: true
+          checkOutDate: true,
         }}
       />
     </div>

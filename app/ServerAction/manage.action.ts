@@ -29,21 +29,28 @@ export async function getGuests() {
 }
 export async function getGuestDetails(Id: string) {
     const { data, error } = await supabase
-        .from("GuestData")
-        .select("*")
-        .eq("Id", Id)
-        .single();
-
+      .from("GuestData")
+      .select("*")
+      .eq("Id", Id)
+      .single();
+  
     const { data: data2, error: error2 } = await supabase
-        .from("Reservations")
-        .select("*, ...RoomTypes(RoomType:TypeName)")
-        .eq("GuestId", Id);
-
-    if (error || error2) {
-        return { success: false, res: [data, data2] };
+      .from("Reservations")
+      .select("*, ...RoomTypes(RoomType:TypeName)")
+      .eq("GuestId", Id);
+  
+    const { data: data3, error: error3 } = await supabase
+      .from("assigned_rooms")
+      .select("RoomNumber, ReservationId") // Make sure to select the ReservationId
+      .eq("GuestId", Id);
+  
+    if (error || error2 || error3) {
+      return { success: false, res: [data, data2, data3] };
     }
-    return { success: true, res: [data, data2] };
-}
+  
+    // Return all three pieces of data: GuestData, Reservations (with RoomTypes), and assigned_rooms.
+    return { success: true, res: [data, data2, data3] };
+  }
 
 export async function editGuest(values: EditGuestProps) {
 

@@ -48,7 +48,6 @@ const useMultiSelect = () => {
 };
 
 const MultiSelector = ({
-    
   values: value,
   onValuesChange: onValueChange,
   loop = false,
@@ -64,7 +63,6 @@ const MultiSelector = ({
 
   const onValueChangeHandler = useCallback(
     (val: string | string[]) => {
-      // Handle both single value toggles and direct array updates
       if (Array.isArray(val)) {
         onValueChange(val);
       } else {
@@ -73,11 +71,12 @@ const MultiSelector = ({
             onValueChange(value.filter((item) => item !== val));
           } else {
             onValueChange([...value, val]);
+            setOpen(false); // Close dropdown after selection
           }
         }
       }
     },
-    [value, maximumSelectedValues, onValueChange]
+    [value, maximumSelectedValues, onValueChange, setOpen],
   );
 
   // TODO : change from else if use to switch case statement
@@ -201,7 +200,7 @@ const MultiSelector = ({
 //             aria-label={`Remove ${item} option`}
 //             aria-roledescription="button to remove option"
 //             type="button"
-            
+
 //             onClick={(e) => handleRemove(item, e)}
 //           >
 //             <span className="sr-only">Remove {item} option</span>
@@ -225,11 +224,14 @@ const MultiSelectorTrigger = forwardRef<
     e.stopPropagation();
   }, []);
 
-  const handleRemove = useCallback((itemToRemove: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onValueChange(value.filter(item => item !== itemToRemove));
-  }, [onValueChange, value]);
+  const handleRemove = useCallback(
+    (itemToRemove: string, e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onValueChange(value.filter((item) => item !== itemToRemove));
+    },
+    [onValueChange, value],
+  );
 
   return (
     <div

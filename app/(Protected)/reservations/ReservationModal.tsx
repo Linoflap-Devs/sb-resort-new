@@ -335,9 +335,9 @@ export default function ReservationModal() {
               )}
             />
             <DialogFooter className="pt-4">
-              <DialogClose asChild>
+              {/* <DialogClose asChild>
                 <Button variant={"ghost"}>Cancel</Button>
-              </DialogClose>
+              </DialogClose> */}
               <Button className="bg-cstm-secondary" type="submit">
                 {!isEmptyObj(selectedReservationData)
                   ? generali18n.update

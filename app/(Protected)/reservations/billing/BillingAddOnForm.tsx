@@ -93,7 +93,7 @@ export default function BillingAddOnForm() {
     queryFn: async () => {
       const res = await getBillingDetails(selectedBillingData.Id);
       if (!res.success) throw new Error();
-      console.log(res.res)
+      console.log(res.res);
       return res.res;
     },
   });
@@ -142,48 +142,58 @@ export default function BillingAddOnForm() {
   const [addOnTotal, setAddOnTotal] = useState<number>(0);
   const [combinedTotal, setCombinedTotal] = useState<number>(0);
   const [newAddOnsTotal, setNewAddOnsTotal] = useState<number>(0);
-  const [combinedAddOns, setCombinedAddOns] = useState<(any & { quantity: number })[]>([]);
+  const [combinedAddOns, setCombinedAddOns] = useState<
+    (any & { quantity: number })[]
+  >([]);
 
   useEffect(() => {
-    if(data) {
+    if (data) {
       const existingAddOn = data.map((item: any) => ({
         ...item,
         value: item.AddOnId,
-        quantity: item.AddOnCount || 1
+        quantity: item.AddOnCount || 1,
       }));
       setCombinedAddOns(existingAddOn);
     }
-  }, [data])
+  }, [data]);
 
   useEffect(() => {
     setAddOnTotal(selectedBillingData?.TotalPerAddOn || 0);
     console.log(selectedBillingData);
-    console.log(addOnTotal)
-  }, [selectedBillingData])
+    console.log(addOnTotal);
+  }, [selectedBillingData]);
 
   useEffect(() => {
-    const total = addedAddOn.reduce((n, { Price, quantity}) => n + (Price * quantity), 0)
-    setNewAddOnsTotal(total)
-  }, [addedAddOn])
-  
+    const total = addedAddOn.reduce(
+      (n, { Price, quantity }) => n + Price * quantity,
+      0,
+    );
+    setNewAddOnsTotal(total);
+  }, [addedAddOn]);
+
   useEffect(() => {
-    console.log("combinedAddOns", combinedAddOns)
-    const total = combinedAddOns.reduce((n, { Price, quantity}) => n + (Price * quantity), 0)
-    setCombinedTotal(total)
-  }, [combinedAddOns])
+    console.log("combinedAddOns", combinedAddOns);
+    const total = combinedAddOns.reduce(
+      (n, { Price, quantity }) => n + Price * quantity,
+      0,
+    );
+    setCombinedTotal(total);
+  }, [combinedAddOns]);
 
   const handleQuantityChange = (value: string, itemValue: number) => {
     const quantity = parseInt(value) || 0;
     setCombinedAddOns((prev) =>
       prev.map((item) =>
-        item.value === itemValue ? { ...item, quantity } : item
-      )
+        item.value === itemValue ? { ...item, quantity } : item,
+      ),
     );
   };
 
   const removeAddOn = (itemValue: number) => {
-    setCombinedAddOns((prev) => prev.filter((item: any) => item.value !== itemValue))
-  }
+    setCombinedAddOns((prev) =>
+      prev.filter((item: any) => item.value !== itemValue),
+    );
+  };
 
   function handleFormSubmit(e: FormEvent) {
     e.preventDefault();
@@ -199,13 +209,13 @@ export default function BillingAddOnForm() {
     processBillingAddOnsMutate(formEntries);
   }
 
-  return (  
+  return (
     <Dialog
       open={billingAddOnFormModalState}
       onOpenChange={(val) => {
         setAddedAddOn([]);
         setBillingAddOnFormModalState(val);
-        setNewAddOnsTotal(0)
+        setNewAddOnsTotal(0);
       }}
     >
       <DialogContent className="sm:max-w-[625px]">
@@ -232,13 +242,13 @@ export default function BillingAddOnForm() {
           </PopoverTrigger>
           <PopoverContent className="w-full p-0">
             <Command>
-              <CommandInput placeholder="Add Add On" className="h-9" />
+              <CommandInput placeholder="Add Add-on" className="h-9" />
               <CommandList>
                 {isAddOnOptLoading ? (
                   <CommandEmpty>Loading...</CommandEmpty>
                 ) : (
                   <>
-                    <CommandEmpty>No AddOn found.</CommandEmpty>
+                    <CommandEmpty>No Add-on found.</CommandEmpty>
                     <CommandGroup>
                       {(AddOnDataOpt || []).map((item: any) => (
                         <CommandItem
@@ -246,15 +256,19 @@ export default function BillingAddOnForm() {
                           value={item.value}
                           data-value={item}
                           onSelect={(currentValue) => {
-                            let exists = combinedAddOns.some((addOn: any) => (item.value === addOn.value) && (item.label === addOn.label) && (item.Price === addOn.Price))
+                            let exists = combinedAddOns.some(
+                              (addOn: any) =>
+                                item.value === addOn.value &&
+                                item.label === addOn.label &&
+                                item.Price === addOn.Price,
+                            );
                             console.log(item);
-                            if(exists) {
-                              console.log(item, "already added")
-                            }
-                            else {
+                            if (exists) {
+                              console.log(item, "already added");
+                            } else {
                               setCombinedAddOns((prev) => [
                                 ...prev,
-                                {...item, quantity: 1}
+                                { ...item, quantity: 1 },
                               ]);
                               setOpen(false);
                             }
@@ -264,7 +278,12 @@ export default function BillingAddOnForm() {
                           <Check
                             className={cn(
                               "ml-auto h-4 w-4",
-                              combinedAddOns.some((addOn: any) => (item.value === addOn.value) && (item.label === addOn.label) && (item.Price === addOn.Price))
+                              combinedAddOns.some(
+                                (addOn: any) =>
+                                  item.value === addOn.value &&
+                                  item.label === addOn.label &&
+                                  item.Price === addOn.Price,
+                              )
                                 ? "opacity-100"
                                 : "opacity-0",
                             )}
@@ -281,17 +300,17 @@ export default function BillingAddOnForm() {
         <div>
           <div className="flex items-center border-y bg-black/[.03] py-1">
             <div className="w-2/6 px-2">
-              <p className="text-black/[.8] font-semibold text-sm uppercase">
+              <p className="text-sm font-semibold uppercase text-black/[.8]">
                 {reservationI18n.addOns}
               </p>
             </div>
             <div className="w-2/6 px-2">
-              <p className="text-black/[.8] font-semibold text-sm uppercase text-right">
+              <p className="text-right text-sm font-semibold uppercase text-black/[.8]">
                 {reservationI18n.unitPrice}
               </p>
             </div>
             <div className="w-2/6 px-2">
-              <p className="text-black/[.8] font-semibold text-sm uppercase text-right">
+              <p className="text-right text-sm font-semibold uppercase text-black/[.8]">
                 {reservationI18n.quantity}
               </p>
             </div>
@@ -302,13 +321,14 @@ export default function BillingAddOnForm() {
               onSubmit={handleFormSubmit}
               className="flex flex-col"
             >
-              {data?.length === 0 && addedAddOn.length === 0 && (
+              {combinedAddOns.length === 0 && (
                 <div className="flex justify-center py-4">
                   <p className="text-cstm-border/50">
                     {reservationI18n.selectAddOn}
                   </p>
                 </div>
               )}
+
               {!isFetched ? (
                 <div className="flex items-center justify-center px-1">
                   <LoaderCircle className="animate-spin" />
@@ -345,34 +365,50 @@ export default function BillingAddOnForm() {
                 </div>
               ))} */}
               {combinedAddOns?.map((item) => (
-                <div className="flex items-center py-2 border-b text-sm" key={item.value}>
-                  <label className="w-2/6 px-2 font-semibold">{item.AddOnName || item.label}</label>
-                  <p className="w-2/6 px-2 text-black/[.6] text-right">₱{formatCurrencyJP(item.Price)}</p>
-                  <div className="w-2/6 px-2 flex justify-end items-center">
-                    
+                <div
+                  className="flex items-center border-b py-2 text-sm"
+                  key={item.value}
+                >
+                  <label className="w-2/6 px-2 font-semibold">
+                    {item.AddOnName || item.label}
+                  </label>
+                  <p className="w-2/6 px-2 text-right text-black/[.6]">
+                    ₱{formatCurrencyJP(item.Price)}
+                  </p>
+                  <div className="flex w-2/6 items-center justify-end px-2">
                     <button
                       type="button"
-                      className="text-xl text-red-500 px-2"
-                      onClick={() => handleQuantityChange(Math.max(item.quantity - 1, 1).toString(), item.value)}
+                      className="px-2 text-xl text-red-500"
+                      onClick={() =>
+                        handleQuantityChange(
+                          Math.max(item.quantity - 1, 1).toString(),
+                          item.value,
+                        )
+                      }
                     >
                       -
                     </button>
 
-      
                     <input
                       type="number"
                       name={item.label}
                       value={item.quantity}
                       min={1}
                       className="input-decoration-none w-12 px-2 text-right"
-                      onChange={(e) => handleQuantityChange(e.target.value, item.value)}
+                      onChange={(e) =>
+                        handleQuantityChange(e.target.value, item.value)
+                      }
                     />
 
- 
                     <button
                       type="button"
-                      className="text-xl text-green-500 px-2"
-                      onClick={() => handleQuantityChange((item.quantity + 1).toString(), item.value)}
+                      className="px-2 text-xl text-green-500"
+                      onClick={() =>
+                        handleQuantityChange(
+                          (item.quantity + 1).toString(),
+                          item.value,
+                        )
+                      }
                     >
                       +
                     </button>
@@ -386,17 +422,14 @@ export default function BillingAddOnForm() {
                   </div>
                 </div>
               ))}
-
             </form>
           </ScrollArea>
-          <div className="p-2 ">
+          <div className="p-2">
             <div className="flex items-center">
-              <h1 className="w-5/6 font-bold uppercase">
-                {generali18n.total}
-              </h1>
+              <h1 className="w-5/6 font-bold uppercase">{generali18n.total}</h1>
               <h1 className="w-1/6 text-center font-bold">
-                {/* ₱{formatCurrencyJP(addOnTotal + newAddOnsTotal)} */}
-                ₱{formatCurrencyJP(combinedTotal)}
+                {/* ₱{formatCurrencyJP(addOnTotal + newAddOnsTotal)} */}₱
+                {formatCurrencyJP(combinedTotal)}
               </h1>
             </div>
             {/* <div className="flex items-center">
@@ -429,7 +462,7 @@ export default function BillingAddOnForm() {
         </Table> */}
         <DialogFooter>
           <Button form="form" type="submit">
-           {generali18n.submit}
+            {"Add-on"}
           </Button>
           {/* <Button form="form" type="button" onClick={() => console.log(combinedAddOns)}>
            test

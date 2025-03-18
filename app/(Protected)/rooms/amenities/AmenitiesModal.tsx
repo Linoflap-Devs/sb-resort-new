@@ -120,7 +120,7 @@ export function AmenitiesModal() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    selectedAmenity.label
+    selectedAmenity.Label
       ? mutation.mutate(values)
       : addMutation.mutate(values);
   }
@@ -178,7 +178,7 @@ export function AmenitiesModal() {
             ></FormField>
             <DialogFooter>
               <Button type="submit" variant="default">
-                {selectedAmenity.Label ? genI18n.update : genI18n.save}
+                {selectedAmenity.Label ? genI18n.update : genI18n.add}
               </Button>
             </DialogFooter>
           </form>

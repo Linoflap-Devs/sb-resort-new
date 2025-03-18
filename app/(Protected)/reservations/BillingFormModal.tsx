@@ -60,7 +60,14 @@ import {
   MultiSelectorList,
   MultiSelectorTrigger,
 } from "@/components/MultiSelect";
-import { calculateInitialBill, commafy, convertToLocalUTC, convertToLocalUTCTime, formatCurrencyJP, getPercentage } from "@/utils/Helpers";
+import {
+  calculateInitialBill,
+  commafy,
+  convertToLocalUTC,
+  convertToLocalUTCTime,
+  formatCurrencyJP,
+  getPercentage,
+} from "@/utils/Helpers";
 import { useTranslation } from "next-export-i18n";
 export default function BillingFormModal() {
   const { t } = useTranslation();
@@ -80,14 +87,14 @@ export default function BillingFormModal() {
     mutationKey: ["AddBilling"],
     mutationFn: async (values: any) => {
       const res = await addBillings(values);
-      const res2 = await updateCheckInTime(values.ReservationId, new Date())
+      const res2 = await updateCheckInTime(values.ReservationId, new Date());
       if (!res.success) throw new Error();
       if (!res2.success) throw new Error();
       return res;
     },
     onSuccess: () => {
       toast.success(generali18n.success, {
-        description: "The room has been added successfully",
+        description: "The guest reservation has been successfully updated.",
       });
       refetchReservation();
       setBillingFormModalState(false);
@@ -160,13 +167,20 @@ export default function BillingFormModal() {
   const reservationBill = (price: number) => {
     const vat = price * 0.12;
     const subtotal = price + vat;
-    const discountValue = selectedReservationData.DiscountId ? selectedReservationData.Discounts.DiscountType === 'percentage' ? getPercentage(subtotal, selectedReservationData.Discounts.DiscountValue) : selectedReservationData.Discounts.DiscountValue : 0;
-    
+    const discountValue = selectedReservationData.DiscountId
+      ? selectedReservationData.Discounts.DiscountType === "percentage"
+        ? getPercentage(
+            subtotal,
+            selectedReservationData.Discounts.DiscountValue,
+          )
+        : selectedReservationData.Discounts.DiscountValue
+      : 0;
+
     // console.log("Price :", price)
     // console.log("VAT: " , vat)
     // console.log("Discount: ", discountValue)
-    return subtotal - discountValue
-  } 
+    return subtotal - discountValue;
+  };
 
   return (
     <Dialog
@@ -176,8 +190,8 @@ export default function BillingFormModal() {
         setBillingFormModalState(open);
       }}
     >
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
+      <DialogContent className="flex min-h-[500px] flex-col sm:max-w-[450px]">
+        <DialogHeader className="mb-8">
           <DialogTitle>{reservationI18n.billing}</DialogTitle>
           <DialogDescription>
             {reservationI18n.billingFormDesc}
@@ -188,7 +202,7 @@ export default function BillingFormModal() {
                 {reservationI18n.reservationId}: {selectedReservationData?.Id}
               </DialogDescription>
               <DialogDescription className="font-semibold">
-                {reservationI18n.numberOfRooms}:
+                {reservationI18n.numberOfRooms}:{" "}
                 {`${selectedReservationData?.RoomCount}`}
               </DialogDescription>
             </div>
@@ -200,10 +214,9 @@ export default function BillingFormModal() {
                 {reservationI18n.initialBill}:{" "}
                 <span className="text-green-500">
                   {`${
-                    
                     !isFetched && currentRoomtypeRate
                       ? "Calculating..."
-                      : `P ${formatCurrencyJP(reservationBill((currentRoomtypeRate || 0)))}`
+                      : `P ${formatCurrencyJP(reservationBill(currentRoomtypeRate || 0))}`
                   }`}
                 </span>
               </DialogDescription>
@@ -211,58 +224,66 @@ export default function BillingFormModal() {
           </div>
         </DialogHeader>
         <Form {...form}>
-          <form className="space-y-1" onSubmit={form.handleSubmit(onSubmit)}>
-            {/* Change to ComboBox */}
-            <FormField
-              control={form.control}
-              name="RoomNumbers"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>{roomsI18n.roomNumber}</FormLabel>
-                  <MultiSelector
-                    values={field.value}
-                    onValuesChange={field.onChange}
-                    loop
-                    className="max-w text-sm" 
-                    maximumSelectedValues={selectedReservationData?.RoomCount}
-                  >
-                    <MultiSelectorTrigger>
-                      <MultiSelectorInput placeholder={roomsI18n.roomNumber} />
-                    </MultiSelectorTrigger>
-                    <MultiSelectorContent>
-                      <MultiSelectorList>
-                        {RoomOptions &&
-                          RoomOptions.map((item) => (
-                            <MultiSelectorItem
-                              key={item.label}
-                              value={item.label}
-                            >
-                              Room {item.label}
-                            </MultiSelectorItem>
-                          ))}
-                      </MultiSelectorList>
-                    </MultiSelectorContent>
-                  </MultiSelector>
-                  <div className="h-4">
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="Deposit"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{reservationI18n.deposit}</FormLabel>
-                  <Input type="number" {...field} />
-                  <div className="h-4">
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
+          <form
+            className="flex flex-1 flex-col space-y-1"
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
+            {/* Form fields container */}
+            <div className="flex-1">
+              <FormField
+                control={form.control}
+                name="RoomNumbers"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>{roomsI18n.roomNumber}</FormLabel>
+                    <MultiSelector
+                      values={field.value}
+                      onValuesChange={field.onChange}
+                      loop
+                      className="max-w text-sm"
+                      maximumSelectedValues={selectedReservationData?.RoomCount}
+                    >
+                      <MultiSelectorTrigger>
+                        <MultiSelectorInput
+                          placeholder={roomsI18n.roomNumber}
+                        />
+                      </MultiSelectorTrigger>
+                      <MultiSelectorContent>
+                        <MultiSelectorList>
+                          {RoomOptions &&
+                            RoomOptions.map((item) => (
+                              <MultiSelectorItem
+                                key={item.label}
+                                value={item.label}
+                              >
+                                Room {item.label}
+                              </MultiSelectorItem>
+                            ))}
+                        </MultiSelectorList>
+                      </MultiSelectorContent>
+                    </MultiSelector>
+                    <div className="h-4">
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="Deposit"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{reservationI18n.deposit}</FormLabel>
+                    <Input type="number" {...field} />
+                    <div className="h-4">
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </div>
+            {/* Footer with auto margin to push it to the bottom */}
+            <DialogFooter className="mt-auto">
               <Button className="bg-cstm-secondary" type="submit">
                 Submit
               </Button>
