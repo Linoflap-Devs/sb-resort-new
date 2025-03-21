@@ -111,7 +111,7 @@ export default function PromosModal() {
     onSuccess: () => {
       setPromosFormModalState(false);
       toast.success(generalI18n.success, {
-        description: "The room has been added successfully",
+        description: "The promo rate has been successfully applied",
       });
       refetch();
     },
@@ -142,8 +142,8 @@ export default function PromosModal() {
     },
     onSuccess: () => {
       setPromosFormModalState(false);
-      toast.success("Room Successfully Added", {
-        description: "The room has been added successfully",
+      toast.success(generalI18n.success, {
+        description: "The promo rate has been successfully updated.",
       });
       refetch();
     },
@@ -170,7 +170,9 @@ export default function PromosModal() {
     >
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit Promo Rate" : "Add Promo Rate"}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? "Edit Promo Rate" : "Add Promo Rate"}
+          </DialogTitle>
           <DialogDescription>
             {isEdit
               ? "Please fill up the form to edit promo rate"
@@ -256,7 +258,7 @@ export default function PromosModal() {
                         disabled={(date) => date < new Date()}
                         initialFocus
                       />
-                    </PopoverContent> 
+                    </PopoverContent>
                   </Popover>
 
                   <FormMessage />
@@ -332,7 +334,7 @@ export default function PromosModal() {
               />
             </div>
             <DialogFooter>
-              <Button className="bg-cstm-secondary" type="submit">
+              <Button className="mt-3 bg-cstm-secondary" type="submit">
                 {isEdit ? "Update Promo Rate" : "Add Promo Rate"}
               </Button>
             </DialogFooter>

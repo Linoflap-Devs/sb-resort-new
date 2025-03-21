@@ -109,7 +109,7 @@ export default function UserFormModal() {
         <DialogHeader>
           <DialogTitle>Add New User</DialogTitle>
           <DialogDescription>
-              Please fill out the form to proceed with the action
+            Please fill out the form to add a new user
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -189,8 +189,8 @@ export default function UserFormModal() {
               />
             </div>
             <DialogFooter>
-              <Button className="bg-cstm-secondary" type="submit">
-                Submit
+              <Button className="mt-4 bg-cstm-secondary" type="submit">
+                Add New User
               </Button>
             </DialogFooter>
           </form>
