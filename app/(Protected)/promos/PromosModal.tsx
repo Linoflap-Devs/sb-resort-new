@@ -28,7 +28,6 @@ import {
 } from "@/components/ui/popover";
 import { addWeeks, format } from "date-fns";
 import { cn } from "@/lib/utils";
-
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -43,6 +42,7 @@ import { useTranslation } from "next-export-i18n";
 import { toast } from "sonner";
 import { isEmptyObj } from "@/utils/Helpers";
 import { addPromos, updatePromos } from "@/app/ServerAction/promos.action";
+
 export default function PromosModal() {
   const { t } = useTranslation();
   const generalI18n = t("general");
@@ -88,8 +88,8 @@ export default function PromosModal() {
       ExpiredAt: isEdit ? new Date(selectedPromoData?.ExpiredAt) : null,
     },
   });
-  /*   const onSubmit = (values: z.infer<typeof formSchema>) =>
-    addMutation.mutate(values); */
+  /* const onSubmit = (values: z.infer<typeof formSchema>) =>
+     saddMutation.mutate(values); */
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (isEdit) {
@@ -128,6 +128,7 @@ export default function PromosModal() {
       }
     },
   });
+
   const editMutation = useMutation({
     mutationFn: async (values: any) => {
       const res = await updatePromos({
@@ -142,8 +143,8 @@ export default function PromosModal() {
     },
     onSuccess: () => {
       setPromosFormModalState(false);
-      toast.success(generalI18n.success, {
-        description: "The promo rate has been successfully updated.",
+      toast.success("Room Successfully Updated", {
+        description: "The room has been updated successfully",
       });
       refetch();
     },
@@ -160,6 +161,7 @@ export default function PromosModal() {
       }
     },
   });
+
   return (
     <Dialog
       open={promosFormModalState}

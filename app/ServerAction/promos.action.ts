@@ -11,6 +11,7 @@ export async function getPromos() {
     }
     return { success: true, res: data };
 }
+
 export async function addPromos(data: any) {
     console.log(data);
     const { error } = await supabase.rpc("add_promo", {
@@ -30,6 +31,7 @@ export async function addPromos(data: any) {
     }
     return { success: true, res: data };
 }
+
 export async function updatePromos(data: any) {
     console.log(data);
     const { error } = await supabase.rpc("update_promo", {
@@ -49,6 +51,7 @@ export async function updatePromos(data: any) {
     }
     return { success: true, res: data };
 }
+
 export async function deletePromo(id: string) {
     const { error } = await supabase
         .from("Promos")
@@ -88,7 +91,7 @@ export async function getPromo(promoCode: string) {
     const today = new Date().toISOString().split('T')[0];
     const { data, error } = await supabase
         .from("Promos")
-        .select("*, ...RoomRates(RoomTypeId,...RoomTypes(RoomType:TypeName))")
+        .select("*, ...RoomRates(RoomTypeIds,...RoomTypes(RoomType:TypeName))")
         .eq("PromoCode", promoCode)
         .gte("ExpiredAt", today).single();
     if (error || !data) {
@@ -97,3 +100,26 @@ export async function getPromo(promoCode: string) {
     console.log(data)
     return { success: true, res: data };
 }
+
+export async function togglePromoStatus(promoId: number, newStatus: boolean) {
+    const { data: promoEdit, error } = await supabase
+        .from("Promos")
+        .update({
+            IsActive: newStatus
+        })
+        .eq("PromoDetailId", promoId)
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Error updating promo status:", error);
+        throw new Error(error.message);
+    }
+
+    return { success: true, res: promoEdit };
+}
+
+
+
+
+
