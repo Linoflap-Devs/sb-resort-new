@@ -37,6 +37,7 @@ import { Skeleton } from "./ui/skeleton";
 import { useEffect } from "react";
 import { useTranslation } from "next-export-i18n";
 import { FilterByCol } from "@/types";
+import SortingButton from "./SortingButton";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -107,9 +108,9 @@ export default function DetailedDataTable<TData, TValue>({
       pagination: {
         pageSize: pageSize,
       },
-      sorting: initialSort
+      sorting: initialSort,
     },
-    
+
     globalFilterFn: (row, columnId, filterValue) => {
       const searchValue = filterValue.toLowerCase();
       //iterates over each column,--returns true if any columns matches the search input.
@@ -119,10 +120,12 @@ export default function DetailedDataTable<TData, TValue>({
 
         // Special handling for full name search
         if (col === "FirstName" || col === "LastName") {
-          const fullName = `${row.getValue("FirstName")} ${row.getValue("LastName")}`.toLowerCase();
+          const firstName = row.getValue("FirstName") ?? "";
+          const lastName = row.getValue("LastName") ?? "";
+          const fullName = `${firstName} ${lastName}`.replace(/\s+/g, " ").trim().toLowerCase();
           return fullName.includes(searchValue);
         }
-
+      
         // Special handling for date searching in "MMM dd, yyyy" format
         if (col === "ChangedAt" && cellValue) {
           let dateValue;
@@ -142,7 +145,11 @@ export default function DetailedDataTable<TData, TValue>({
         }
 
         // Special handling for "CreatedAt" and "ExpiredAt" (Promo Dates)
-        if ((col === "CreatedAt" || col === "ExpiredAt") && typeof cellValue === "string" && cellValue) {
+        if (
+          (col === "CreatedAt" || col === "ExpiredAt") &&
+          typeof cellValue === "string" &&
+          cellValue
+        ) {
           const dateValue = new Date(cellValue);
           if (isValid(dateValue)) {
             cellValue = format(dateValue, "MMM yyyy"); // Jul 2024
@@ -152,8 +159,7 @@ export default function DetailedDataTable<TData, TValue>({
         }
         return cellValue?.toString().toLowerCase().includes(searchValue);
       });
-    }
-
+    },
   });
 
   useEffect(() => {
@@ -171,17 +177,15 @@ export default function DetailedDataTable<TData, TValue>({
         <div className="flex items-center gap-4 pt-0">
           <Input
             placeholder={searchPlaceholder}
-            value={
-              globalFilter
-            }
+            value={globalFilter}
             onChange={(event) => {
               setGlobalFilter(event.target.value);
-            }}
+            }}            
             className="max-w-sm"
           />
 
           <div className="ml-auto flex space-x-4">
-{/*             <DropdownMenu>
+            {/*             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="ml-auto">
                   {generalI18n.columns} <ChevronDownIcon className="ml-2 h-4 w-4" />
@@ -207,7 +211,6 @@ export default function DetailedDataTable<TData, TValue>({
                   })}
               </DropdownMenuContent>
             </DropdownMenu> */}
-            
           </div>
         </div>
         <div className="overflow-hidden rounded-md border border-cstm-tertiary">
@@ -222,15 +225,24 @@ export default function DetailedDataTable<TData, TValue>({
                       {headerGroup.headers.map((header) => {
                         return (
                           <TableHead
-                            className="font-semibold text-cstm-tertiary"
+                            className=" font-semibold text-cstm-tertiary" // Add text-center
                             key={header.id}
                           >
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext(),
+                            <div className="flex items-center justify-center text-center gap-2">
+                              {" "}
+                              {/* Center content */}
+                              {header.isPlaceholder
+                                ? null
+                                : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext(),
+                                  )}
+                              {/* Conditionally render SortingButton for the Date column */}
+                              {header.column.id === "ChangedAt" &&
+                                header.column.getCanSort() && (
+                                  <SortingButton column={header.column} />
                                 )}
+                            </div>
                           </TableHead>
                         );
                       })}
@@ -246,7 +258,7 @@ export default function DetailedDataTable<TData, TValue>({
                         data-state={row.getIsSelected() && "selected"}
                       >
                         {row.getVisibleCells().map((cell) => (
-                          <TableCell className="py-2" key={cell.id}>
+                          <TableCell className="py-2 text-center" key={cell.id}>
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext(),
@@ -270,32 +282,33 @@ export default function DetailedDataTable<TData, TValue>({
             </>
           )}
         </div>
-        <div className="flex flex-col justify-center items-end">
-            <div className="flex items-center justify-end space-x-2">
-              {pagination && (
-                <div className="space-x-2">
-                  <Button
-                    size="sm"
-                    className="bg-cstm-primary text-cstm-tertiary"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                  >
-                    {generalI18n.previous}
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="bg-cstm-primary text-cstm-tertiary"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                  >
-                    {generalI18n.next}
-                  </Button>
-                </div>
-              )}
-            </div>
-            <p className="text-sm text-white mt-2">
-              Showing {table.getRowModel().rows.length.toLocaleString()} of {table.getRowCount().toLocaleString()} rows.  
-            </p>
+        <div className="flex flex-col items-end justify-center">
+          <div className="flex items-center justify-end space-x-2">
+            {pagination && (
+              <div className="space-x-2">
+                <Button
+                  size="sm"
+                  className="bg-cstm-primary text-cstm-tertiary"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  {generalI18n.previous}
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-cstm-primary text-cstm-tertiary"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  {generalI18n.next}
+                </Button>
+              </div>
+            )}
+          </div>
+          <p className="mt-2 text-sm text-white">
+            Showing {table.getRowModel().rows.length.toLocaleString()} of{" "}
+            {table.getRowCount().toLocaleString()} rows.
+          </p>
         </div>
       </div>
     </Card>

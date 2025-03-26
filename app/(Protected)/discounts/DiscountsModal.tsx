@@ -49,9 +49,8 @@ import { addPromos, updatePromos } from "@/app/ServerAction/promos.action";
 import { DatePicker } from "@/components/ui/calendar2";
 import { useEffect, useState } from "react";
 import { addDiscount, updateDiscount } from "@/app/ServerAction/discounts.action";
-import { createDropdownMenuScope } from "@radix-ui/react-dropdown-menu";
-export function DiscountsModal() {
 
+export function DiscountsModal() {
     const { 
         discountFormModalState, 
         setDiscountFormModalState, 
@@ -61,14 +60,13 @@ export function DiscountsModal() {
         setSelectedDiscountData, 
         selectedDiscountRoomType, 
         setSelectedDiscountRoomType } = useGlobalStore();
-
-
     useEffect(() => {
         console.log(selectedDiscountData)
         console.log(form.getValues())
     }, [])
 
     const { data: RoomTypeOption } = roomTypeOptionsQuery();
+
     const [editMode, setEditMode] = useState(false);
     const { refetch } = getDiscountsQuery();
     const formSchema = z.object({

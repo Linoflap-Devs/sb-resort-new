@@ -36,11 +36,16 @@ import {
 import { toast } from "sonner";
 import { useEffect, useRef, useState } from "react";
 import AlertConfirmDelete from "@/components/AlertConfirmDelete";
-import { de } from "date-fns/locale";
 
 type DiscountTableProps = {
   role: number;
 };
+
+type RoomType = {
+  DiscountID: number;
+  RoomTypeName: string;
+};
+
 export function DiscountsTable({ role }: DiscountTableProps) {
   const {
     getDiscountsQuery,
@@ -51,20 +56,25 @@ export function DiscountsTable({ role }: DiscountTableProps) {
     setSelectedDiscountRoomType,
     selectedDiscountRoomType,
     getAllDiscountRoomTypeQuery,
+    roomTypeOptionsQuery,
+    selectedDiscountsFilter,
   } = useGlobalStore();
 
   const { t } = useTranslation();
   const generalI18n = t("general");
   const discountI18n = t("Discounts");
   const { data, isLoading, refetch } = getDiscountsQuery();
+  // getting room types
+  const { data: roomTypeOptions } = roomTypeOptionsQuery();
+
   const {
     data: roomsDiscount,
     isLoading: roomDiscountLoading,
     refetch: roomDiscountRefetch,
   } = getAllDiscountRoomTypeQuery();
+
   const [updateLoading, setUpdateLoading] = useState(false);
   const [open, setOpen] = useState(false);
-
   const toastId = "toast";
 
   const filterRoomTypes = (id: number) => {
@@ -73,7 +83,6 @@ export function DiscountsTable({ role }: DiscountTableProps) {
         .filter((discount: any) => discount.DiscountId === id)
         .map((discount: any) => discount.RoomTypeId);
     }
-
     return [];
   };
 
@@ -433,10 +442,31 @@ export function DiscountsTable({ role }: DiscountTableProps) {
               <h1 className="text-xl">{record.DiscountName}</h1>
               <div>
                 <span
-                  className={`${record.IsActive ? "bg-green-500" : "bg-red-500"} rounded p-1 text-white`}
+                  className={`${record.IsActive ? "bg-green-500" : "bg-red-500"
+                    } rounded p-1 text-white`}
                 >
                   {record.IsActive ? "Active" : "Inactive"}
                 </span>
+              </div>
+              {/* Displaying of Room Type */}
+              <div className="mt-2 flex flex-col">
+                <p className="font-bold">Selected Room Type</p>
+                <p>
+                  {record?.Id && filterRoomTypes(record.Id).length > 0
+                    ? filterRoomTypes(record.Id)
+                      .map((roomTypeId: number) => {
+
+                        const roomType = roomTypeOptions?.find(
+                          (room: { value: number; label: string }) =>
+                            room.value === roomTypeId
+                        );
+
+                        return roomType ? roomType.label : null; // Ignore unknown types
+                      })
+                      .filter(Boolean)
+                      .join(", ")
+                    : "No selected Room Types"}
+                </p>
               </div>
               <div className="mt-4 grid grid-cols-2 gap-y-4">
                 <div className="flex flex-col">
@@ -444,9 +474,7 @@ export function DiscountsTable({ role }: DiscountTableProps) {
                   <p
                     className={
                       record.StartDate &&
-                      (new Date(record.StartDate) > new Date()
-                        ? "text-red-500"
-                        : "")
+                        new Date(record.StartDate) > new Date() ? "text-red-500" : ""
                     }
                   >
                     {record.StartDate
@@ -454,14 +482,13 @@ export function DiscountsTable({ role }: DiscountTableProps) {
                       : "None"}
                   </p>
                 </div>
+
                 <div className="flex flex-col">
                   <p className="font-bold">Ending Date</p>
                   <p
                     className={
                       record.EndDate &&
-                      (new Date(record.EndDate) < new Date()
-                        ? "text-red-500"
-                        : "")
+                        new Date(record.EndDate) < new Date() ? "text-red-500" : ""
                     }
                   >
                     {record.EndDate
@@ -469,18 +496,21 @@ export function DiscountsTable({ role }: DiscountTableProps) {
                       : "None"}
                   </p>
                 </div>
+
                 <div className="flex flex-col">
                   <p className="font-bold">Minimum Stay</p>
                   <p>
                     {record.MinNight > 0 ? `${record.MinNight} nights` : "None"}
                   </p>
                 </div>
+
                 <div className="flex flex-col">
                   <p className="font-bold">Maximum Stay</p>
                   <p>
                     {record.MaxNight > 0 ? `${record.MaxNight} nights` : "None"}
                   </p>
                 </div>
+
                 <div className="flex flex-col">
                   <p className="font-bold">Minimum Billing</p>
                   <p>
@@ -489,6 +519,7 @@ export function DiscountsTable({ role }: DiscountTableProps) {
                       : "None"}
                   </p>
                 </div>
+
                 <div className="flex flex-col">
                   <p className="font-bold">Maximum Billing</p>
                   <p>
@@ -498,6 +529,7 @@ export function DiscountsTable({ role }: DiscountTableProps) {
                   </p>
                 </div>
               </div>
+
               <div className="mt-4 flex flex-col">
                 <p className="font-bold">Maximum Redemptions</p>
                 <p>{record.MaxUsage > 0 ? record.MaxUsage : "None"}</p>
@@ -530,8 +562,6 @@ export function DiscountsTable({ role }: DiscountTableProps) {
                 setSelectedDiscountData(record);
                 setDiscountFormModalState(true);
                 setSelectedDiscountRoomType(filterRoomTypes(record.Id));
-                console.log(selectedDiscountRoomType);
-                console.log(filterRoomTypes(7));
               }}
             >
               <div className="flex w-full items-center justify-between">
@@ -569,15 +599,49 @@ export function DiscountsTable({ role }: DiscountTableProps) {
       <DetailedDataTable
         isLoading={isLoading}
         title={"Discounts"}
-        data={(data as any[]) || []}
-        searchPlaceholder={"Search Discounts"}
-        columns={columns}
+        data={(() => {      
+          if (!data) return [];
+      
+          // Apply Strict Room Type Filtering
+          const filteredData = data.filter((record: { Id: number; }) => {
+            const roomTypesForDiscount = filterRoomTypes(record.Id);
+      
+            return (
+              selectedDiscountsFilter.length === 0 || 
+              selectedDiscountsFilter.every((selectedType: any) => roomTypesForDiscount.includes(selectedType))
+            );
+          });
+            
+          return filteredData.map((record: { Id: number; }) => {
+            const roomTypeNames = filterRoomTypes(record.Id)
+              .map((roomTypeId: any) => {
+                const roomType = roomTypeOptions?.find((room: { value: any; }) => room.value === roomTypeId);
+                return roomType ? roomType.label : null;
+              })
+              .filter(Boolean)
+              .join(", ");
+      
+            return {
+              ...record,
+              RoomTypes: roomTypeNames,
+            };
+          });
+        })()} 
+        searchPlaceholder="Search Discounts"
+        columns={[
+          ...columns,
+          {
+            header: "Room Types",
+            accessorKey: "RoomTypes",
+          }
+        ]}
         columnToSearch={[
           "Id",
           "DiscountName",
           "DiscountCode",
           "DiscountType",
           "DiscountValue",
+          "RoomTypes",
         ]}
         pageSize={10}
         initialSort={[{ id: "Id", desc: true }]}
@@ -589,6 +653,7 @@ export function DiscountsTable({ role }: DiscountTableProps) {
           MinAmount: false,
           MaxAmount: false,
           MaxUsage: false,
+          RoomTypes: false,
         }}
       />
     </div>

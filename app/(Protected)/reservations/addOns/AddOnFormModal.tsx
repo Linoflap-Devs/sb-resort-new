@@ -11,7 +11,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { useGlobalStore } from "@/store/useGlobalStore";
 import { useMutation } from "@tanstack/react-query";
-
 import { commafy, isEmptyObj } from "@/utils/Helpers";
 import { addAddOn, editAddOn } from "@/app/ServerAction/reservations.action";
 import { toast } from "sonner";
@@ -79,13 +78,28 @@ export default function AddOnFormModal() {
     },
   });
 
-  const { data } = addOnTypeQuery();
+  const { data: addOnOptions } = addOnQuery() ?? {};
+  const { data: addOnTypes } = addOnTypeQuery() ?? {};  
 
   const formScheme = z.object({
-    AddOnName: z.string().min(1, { message: "Required" }),
+    AddOnName: z
+      .string()
+      .min(1, { message: "Required" })
+      .refine((name) => {
+        if (!addOnOptions || addOnOptions.length === 0) {
+          console.warn("No existing add-ons found!");
+          return true; // Skip validation if no data
+        }
+
+        const existingAddOnNames = addOnOptions
+          .filter((addOn: any) => addOn?.AddOnName)
+          .map((addOn: any) => addOn.AddOnName.trim().toLowerCase()); // Normalize names
+
+        return !existingAddOnNames.includes(name.trim().toLowerCase()); // Check uniqueness
+      }, { message: "Add-on name must be unique" }),
     Price: z.string().min(1, { message: "Required" }),
     AddOnTypeId: z.string().min(1, { message: "Required" }),
-  });
+  });  
 
   const form = useForm({
     resolver: zodResolver(formScheme),
@@ -154,7 +168,14 @@ export default function AddOnFormModal() {
                       state={field.value}
                       setState={field.onChange}
                       placeholder="Select Add-on Type"
-                      options={data}
+                      options={
+                        (addOnTypes || [])
+                          .filter((type: any) => type.value !== undefined && type.value !== null)
+                          .map((type: any) => ({
+                            value: String(type.value),
+                            label: type.label || "Unknown",
+                          }))
+                      }
                     />
                     <FormMessage />
                   </FormItem>

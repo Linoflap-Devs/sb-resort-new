@@ -82,7 +82,7 @@ export default function UserFormModal() {
     },
     onSuccess: (data) => {
       toast.success("Success", {
-        description: "Guest Added Successfully",
+        description: "New User Added successfully",
       });
       refetch();
     },
