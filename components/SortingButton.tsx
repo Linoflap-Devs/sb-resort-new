@@ -1,6 +1,6 @@
 import { ArrowUp, ArrowDown } from "lucide-react";
 
-const SortingButton = ({ column: any }) => {
+const SortingButton = ({ column }: any) => {
   const sortedDirection = column.getIsSorted();
 
   return (
