@@ -2068,7 +2068,7 @@ function ConfirmForm({
               </div>
               {/* <p className="text-white">You may finish your booking, but see to it that you pay the amount specified within the next 24 hours.</p>
                     <p className="text-white/[.70]">Once paid, please send us a copy of the scanned deposit slip via email or by calling us at Contact Number for verification purpose. Upon verifying your payment, a confirmation of reservation will be sent to your email. </p> */}
-              <div>{parse(config?.PaymentInstructions)}</div>
+              <div className="text-white/[.80]">{parse(config?.PaymentInstructions)}</div>
             </div>
 
             <div className="flex w-full flex-col gap-4 rounded-lg bg-cstm-secondary p-5 md:w-1/3">
